@@ -6,13 +6,15 @@ def fetch_and_store_pv_data():
     response = requests.get(url)
     data = response.json()    
     for item in data:
-        PvData.objects.update_or_create(
-            signal_uid=item['signal_uid'],
-            defaults={
-                'parameter_id': item['parameter_id'],
-                'installation_name': item['installation_name'],
-                'signal_time': item['signal_time'],
-                'signal_value': item['signal_value'],
-                'unit': item['unit'],
-            }
-        )
+        if not PvData.objects.filter(signal_time=item['signal_time'], signal_uid=item['signal_uid']).exists():
+            PvData.objects.create(
+                parameter_id=item['parameter_id'],
+                installation_name=item['installation_name'],
+                signal_uid=item['signal_uid'],
+                signal_time=item['signal_time'],
+                signal_value=item['signal_value'],
+                unit=item['unit'],
+            )
+        else:
+            # Handle the case where the record already exists
+            print(f"Record with signal_time {item['signal_time']} and signal_uid {item['signal_uid']} already exists.")
