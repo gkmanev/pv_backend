@@ -17,7 +17,7 @@ def fetch_and_store_pv_data():
             signal_value = float(item['signal_value']) / 5 if item['parameter_id'] == 720 else item['signal_value']
             
             # Check for uniqueness
-            if not PvData.objects.filter(signal_time=minute_signal_time, signal_uid=item['installation_name'], parameter_id=item['parameter_id'] ).exists():
+            if not PvData.objects.filter(installation_name=item['installation_name'], signal_time=minute_signal_time, parameter_id=item['parameter_id']).exists():
                 PvData.objects.create(
                     parameter_id=item['parameter_id'],
                     installation_name=item['installation_name'],
