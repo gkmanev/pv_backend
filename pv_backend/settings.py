@@ -24,12 +24,12 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','85.14.6.37']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','85.14.6.37', '209.38.208.230']
 
 CORS_ALLOWED_ORIGINS = [
-"http://localhost:8080",
-"http://127.0.0.1:8000",
-
+    "http://localhost:8080",
+    "http://127.0.0.1:8000",
+    "http://209.38.208.230:8000"
 ]
 
 # Celery Configuration Options
@@ -102,23 +102,23 @@ WSGI_APPLICATION = 'pv_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_NAME'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': 'db',
-        'PORT': 5432,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('POSTGRES_NAME'),
+#         'USER': os.getenv('POSTGRES_USER'),
+#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+#         'HOST': 'db',
+#         'PORT': 5432,
+#     }
+# }
 
 CACHES = {
     'default': {
