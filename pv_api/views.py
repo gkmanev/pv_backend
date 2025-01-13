@@ -4,7 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Max
 from django.db.models.functions import TruncDate
 from django.db.models import Sum, Avg, F, Q
-from datetime import timedelta
+from datetime import datetime, timedelta
 from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer
 from pv_api.filters import PvMeasurementDataFilter  # <-- Import the filter
 from rest_framework.response import Response
@@ -43,7 +43,8 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
             )
         elif day_ahead:
             # Filter from today to the next day + 1 without aggregation
-            today = self.queryset.aggregate(max_day=Max('timestamp'))['max_day']
+            # get today's date
+            today = datetime.now().date()
             after_tomorrow = today + timedelta(days=2)
             queryset = queryset.filter(timestamp__gte=today, timestamp__lt=after_tomorrow)
 
