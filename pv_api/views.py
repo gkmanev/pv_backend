@@ -26,6 +26,7 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         """
         queryset = super().get_queryset()
         aggregate_all = self.request.query_params.get('all')
+        day_ahead = self.request.query_params.get('day_ahead')
         if aggregate_all:  # If 'all' query param is received
             queryset = (
                 queryset.annotate(day=TruncDate('timestamp'))  # Truncate to date instead of datetime
@@ -40,6 +41,16 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
             )
                 .order_by('day', 'farm')
             )
+        elif day_ahead:
+            # Filter from today to the next day + 1 without aggregation
+            today = self.queryset.aggregate(max_day=Max('timestamp'))['max_day']
+            after_tomorrow = today + timedelta(days=2)
+            queryset = queryset.filter(timestamp__gte=today, timestamp__lt=after_tomorrow)
+
+        else:
+            queryset = queryset
+
+
         return queryset
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
