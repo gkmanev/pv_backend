@@ -5,9 +5,10 @@ from django.db.models import Max
 from django.db.models.functions import TruncDay
 from django.db.models import Sum
 from datetime import timedelta
-
-from .serializers import PvDataSerializer, PvMeasurementDataSerializer
+from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer
 from pv_api.filters import PvMeasurementDataFilter  # <-- Import the filter
+from rest_framework.response import Response
+
 
 class PvDataViewSet(viewsets.ModelViewSet):
     queryset = PvTechnicalData.objects.all().order_by('signal_time')
@@ -39,3 +40,11 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
             )
 
         return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if 'all' in request.query_params:
+            serializer = AggregatedPvMeasurementDataSerializer(queryset, many=True)
+        else:
+            serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
