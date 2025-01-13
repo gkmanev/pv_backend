@@ -43,10 +43,10 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 
 CELERY_BEAT_SCHEDULE = {
-    'fetch-and-store-pv-data-every-5-minutes': {
-        'task': 'pv_api.tasks.task_fetch_and_store_pv_data',
-        'schedule': crontab(),
-    },
+    # 'fetch-and-store-pv-data-every-5-minutes': {
+    #     'task': 'pv_api.tasks.task_fetch_and_store_pv_data',
+    #     'schedule': crontab(),
+    # },
 }
 
 # Application definition
