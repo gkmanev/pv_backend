@@ -11,3 +11,4 @@ class PvMeasurementDataFilter(filters.FilterSet):
     class Meta:
         model = PvMeasurementData
         fields = ['ppe', 'farm', 'start_date', 'end_date']
+        
