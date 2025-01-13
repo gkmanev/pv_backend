@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'django_celery_beat',
+    'django_celery_beat',     
+    'django_filters',
     'pv_api',  # Add your application here   
 ]
 
