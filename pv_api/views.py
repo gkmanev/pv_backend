@@ -2,6 +2,8 @@ from rest_framework import viewsets
 from .models import PvTechnicalData, PvMeasurementData
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Max
+from django.db.models.functions import TruncDay
+from django.db.models import Sum
 from datetime import timedelta
 
 from .serializers import PvDataSerializer, PvMeasurementDataSerializer
@@ -22,18 +24,18 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         Override get_queryset to dynamically filter by the month of the most recent data point.
         """
         queryset = super().get_queryset()
-        week = self.request.query_params.get('week')
-        if week:
-            # Get the most recent data point
-            last_data_point = queryset.aggregate(Max('timestamp'))['timestamp__max']
-            
-            if last_data_point:
-                # Get the first day of the month for the last data point
-                week_ago = last_data_point - timedelta(weeks=1)
-                # last_data_point = last_data_point.replace(hour=0, minute=0, second=0, microsecond=0)
-                # start_of_month = last_data_point.replace(day=1)  # First day of the last data point's month
-                
-                # Filter the data to return only records from the current month
-                queryset = queryset.filter(timestamp__gte=week_ago)
+        aggregate_all = self.request.query_params.get('all')
+        if aggregate_all:  # If 'all' query param is received
+            queryset = (
+                queryset.annotate(day=TruncDay('timestamp'))  # Truncate timestamps to the day
+                .values('day')  # Group by truncated day
+                .annotate(
+                    total_production=Sum('production'),  # Aggregate production
+                    avg_temperature=Sum('temperature_2m') / Sum('production'),  # Example: weighted avg temperature
+                    total_uv_index=Sum('uv_index'),  # Aggregate UV index
+                    total_radiation=Sum('direct_radiation')  # Aggregate direct radiation
+                )
+                .order_by('day')
+            )
 
         return queryset
