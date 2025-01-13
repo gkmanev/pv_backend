@@ -29,14 +29,14 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         if aggregate_all:  # If 'all' query param is received
             queryset = (
                 queryset.annotate(day=TruncDate('timestamp'))  # Truncate to date instead of datetime
-                .values('day')
+                .values('day', 'farm')
                 .annotate(
                     total_production=Sum('production'),
                     avg_temperature=Sum('temperature_2m') / Sum('production'),
                     total_uv_index=Sum('uv_index'),
                     total_radiation=Sum('direct_radiation')
                 )
-                .order_by('day')
+                .order_by('day', 'farm')
             )
         return queryset
     def list(self, request, *args, **kwargs):

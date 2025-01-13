@@ -13,7 +13,10 @@ class PvMeasurementDataSerializer(serializers.ModelSerializer):
 
 class AggregatedPvMeasurementDataSerializer(serializers.Serializer):
     day = serializers.DateField()
+    farm = serializers.CharField(max_length=100)  # Include `farm` if grouping by it
     total_production = serializers.DecimalField(max_digits=10, decimal_places=3)
     avg_temperature = serializers.DecimalField(max_digits=10, decimal_places=2)
-    total_uv_index = serializers.DecimalField(max_digits=10, decimal_places=2)
-    total_radiation = serializers.DecimalField(max_digits=10, decimal_places=2)
+    avg_uv_index = serializers.DecimalField(max_digits=10, decimal_places=2)
+    avg_direct_radiation = serializers.DecimalField(max_digits=10, decimal_places=2)
+    latitude = serializers.DecimalField(max_digits=10, decimal_places=4)
+    longitude = serializers.DecimalField(max_digits=10, decimal_places=4)
