@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from .models import PvTechnicalData, PvMeasurementData
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Max
-from django.db.models.functions import TruncDay
+from django.db.models.functions import TruncDate
 from django.db.models import Sum
 from datetime import timedelta
 from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer
@@ -28,19 +28,17 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         aggregate_all = self.request.query_params.get('all')
         if aggregate_all:  # If 'all' query param is received
             queryset = (
-                queryset.annotate(day=TruncDay('timestamp'))  # Truncate timestamps to the day
-                .values('day')  # Group by truncated day
+                queryset.annotate(day=TruncDate('timestamp'))  # Truncate to date instead of datetime
+                .values('day')
                 .annotate(
-                    total_production=Sum('production'),  # Aggregate production
-                    avg_temperature=Sum('temperature_2m') / Sum('production'),  # Example: weighted avg temperature
-                    total_uv_index=Sum('uv_index'),  # Aggregate UV index
-                    total_radiation=Sum('direct_radiation')  # Aggregate direct radiation
+                    total_production=Sum('production'),
+                    avg_temperature=Sum('temperature_2m') / Sum('production'),
+                    total_uv_index=Sum('uv_index'),
+                    total_radiation=Sum('direct_radiation')
                 )
                 .order_by('day')
             )
-
         return queryset
-    
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         if 'all' in request.query_params:
