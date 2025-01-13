@@ -3,7 +3,7 @@ from .models import PvTechnicalData, PvMeasurementData
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Max
 from django.db.models.functions import TruncDate
-from django.db.models import Sum
+from django.db.models import Sum, Avg, F, Q
 from datetime import timedelta
 from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer
 from pv_api.filters import PvMeasurementDataFilter  # <-- Import the filter
@@ -32,10 +32,12 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
                 .values('day', 'farm')
                 .annotate(
                     total_production=Sum('production'),
-                    avg_temperature=Sum('temperature_2m') / Sum('production'),
-                    total_uv_index=Sum('uv_index'),
-                    total_radiation=Sum('direct_radiation')
-                )
+                    avg_temperature=Avg('temperature_2m', filter=~Q(temperature_2m=0)),
+                    avg_uv_index=Avg('uv_index', filter=~Q(uv_index=0)),
+                    avg_direct_radiation=Avg('direct_radiation', filter=~Q(direct_radiation=0)),
+                    latitude=F('latitude'),
+                    longitude=F('longitude')
+            )
                 .order_by('day', 'farm')
             )
         return queryset
