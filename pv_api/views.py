@@ -10,7 +10,7 @@ class PvDataViewSet(viewsets.ModelViewSet):
     serializer_class = PvDataSerializer
 
 class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = PvMeasurementData.objects.all()
+    queryset = PvMeasurementData.objects.all().order_by('timestamp')
     serializer_class = PvMeasurementDataSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = PvMeasurementDataFilter  # <-- Use the filter here
