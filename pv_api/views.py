@@ -22,7 +22,7 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         Override get_queryset to dynamically filter by the month of the most recent data point.
         """
         queryset = super().get_queryset()
-        week = self.request.query_params.get('month')
+        week = self.request.query_params.get('week')
         if week:
             # Get the most recent data point
             last_data_point = queryset.aggregate(Max('timestamp'))['timestamp__max']
