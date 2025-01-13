@@ -1,7 +1,7 @@
 from rest_framework import viewsets
-from .models import PvData
+from .models import PvTechnicalData
 from .serializers import PvDataSerializer
 
 class PvDataViewSet(viewsets.ModelViewSet):
-    queryset = PvData.objects.all().order_by('signal_time')
+    queryset = PvTechnicalData.objects.all().order_by('signal_time')
     serializer_class = PvDataSerializer
