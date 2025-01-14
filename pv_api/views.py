@@ -44,13 +44,12 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         elif day_ahead:
             # Filter from today to the next day + 1 without aggregation
             # get today's date
-            today = datetime.now().date()
-            after_tomorrow = today + timedelta(days=2)
-            queryset = queryset.filter(timestamp__gte=today, timestamp__lt=after_tomorrow)
+            today = datetime.now().date()            
+            queryset = queryset.filter(timestamp__gte=today)
+            print("HERE!!!")
 
         else:
             queryset = queryset
-
 
         return queryset
     def list(self, request, *args, **kwargs):
