@@ -80,7 +80,7 @@ ROOT_URLCONF = 'pv_backend.urls'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 1000,  # Customize this based on your needs
+    'PAGE_SIZE': 100,  # Customize this based on your needs
 }
 
 TEMPLATES = [

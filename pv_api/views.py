@@ -6,7 +6,6 @@ from django.db.models.functions import TruncDate
 from django.db.models import Sum, Avg, F, Q
 from datetime import datetime, timedelta
 from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer
-from pv_api.filters import PvMeasurementDataFilter  # <-- Import the filter
 from rest_framework.response import Response
 
 
@@ -17,8 +16,6 @@ class PvDataViewSet(viewsets.ModelViewSet):
 class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = PvMeasurementData.objects.all().order_by('timestamp')
     serializer_class = PvMeasurementDataSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = PvMeasurementDataFilter 
     
     def get_queryset(self):
         """
@@ -28,6 +25,8 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         aggregate_all = self.request.query_params.get('all')
         day_ahead = self.request.query_params.get('day_ahead')
         farm = self.request.query_params.get('farm')
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
         if aggregate_all:  # If 'all' query param is received            
             queryset = (
                 queryset.annotate(day=TruncDate('timestamp'))  # Truncate to date instead of datetime
@@ -49,7 +48,9 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
             # get today's date
             today = datetime.now().date()            
             queryset = queryset.filter(timestamp__gte=today)
-            
+        
+        elif start_date and end_date:
+            queryset = queryset.filter(timestamp__range=[start_date, end_date])
 
         else:
             queryset = queryset
