@@ -7,6 +7,8 @@ from django.db.models import Sum, Avg, F, Q
 from datetime import datetime, timedelta
 from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
+
 
 
 class PvDataViewSet(viewsets.ModelViewSet):
@@ -16,6 +18,7 @@ class PvDataViewSet(viewsets.ModelViewSet):
 class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = PvMeasurementData.objects.all().order_by('timestamp')
     serializer_class = PvMeasurementDataSerializer
+    pagination_class = PageNumberPagination
     
     def get_queryset(self):
         """
