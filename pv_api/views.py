@@ -52,8 +52,10 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
             today = datetime.now().date()            
             queryset = queryset.filter(timestamp__gte=today)
         
-        elif start_date and end_date:
-            queryset = queryset.filter(timestamp__range=[start_date, end_date])
+        elif start_date and end_date and farm:
+            # Filter by start_date, end_date and farm
+            queryset = queryset.filter(timestamp__range=[start_date, end_date], farm=farm)
+            
 
         else:
             queryset = queryset
