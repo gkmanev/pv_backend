@@ -10,20 +10,21 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
+                # Find duplicate entries based on timestamp and farm
         duplicates = PvMeasurementData.objects.values('timestamp', 'farm') \
-        .annotate(count=Count('id')) \
-        .filter(count__gt=1)
+            .annotate(count=Count('id')) \
+            .filter(count__gt=1)
 
         # Loop through each duplicate and remove the extras
         for duplicate in duplicates:
             timestamp = duplicate['timestamp']
             farm = duplicate['farm']
             
-            # Get all records with the same timestamp and farm, sorted by ID (or other criteria)
+            # Get all records with the same timestamp and farm, sorted by ID (or another field, like timestamp)
             duplicate_records = PvMeasurementData.objects.filter(timestamp=timestamp, farm=farm).order_by('id')
             
-            # Keep the first record and delete the rest
-            duplicate_records[1:].delete()
+            # Keep the first record (or based on any other criteria) and delete the rest
+            duplicate_records[1:].delete()  # Deletes everything except the first record
 
 
 
