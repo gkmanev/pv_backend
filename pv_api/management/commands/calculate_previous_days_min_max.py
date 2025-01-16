@@ -35,7 +35,7 @@ class Command(BaseCommand):
                 result_max = df.groupby(['ppe', 'time'])['production'].max().reset_index()
                 result = pd.merge(result_min, result_max, on=['ppe', 'time'], suffixes=('_min', '_max'))  
                 
-                start_period = datetime.fromisoformat(initial_date.replace('Z', '+00:00'))
+                start_period = datetime.fromisoformat(initial_date.replace('Z', '+00:00')) + timedelta(days=1)
                 end_period = start_period + timedelta(days=1)
 
                 query_for_update_min_max = PvMeasurementData.objects.filter(timestamp__range=(start_period, end_period))
