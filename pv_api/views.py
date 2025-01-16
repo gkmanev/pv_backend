@@ -1,13 +1,11 @@
 from rest_framework import viewsets
 from .models import PvTechnicalData, PvMeasurementData
-from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Max
 from django.db.models.functions import TruncDate
 from django.db.models import Sum, Avg, F, Q
 from datetime import datetime, timedelta
 from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer
-from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
+from .pagination import CustomPageNumberPagination
 
 
 
@@ -18,7 +16,7 @@ class PvDataViewSet(viewsets.ModelViewSet):
 class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = PvMeasurementData.objects.all().order_by('timestamp')
     serializer_class = PvMeasurementDataSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
         queryset = super().get_queryset()
