@@ -8,25 +8,7 @@ import pandas as pd
 class Command(BaseCommand):
     help = 'Import data from combined_weather_and_df_dam.csv into PvMeasurementData'
 
-    def handle(self, *args, **kwargs):
-
-                # Find duplicate entries based on timestamp and farm
-        duplicates = PvMeasurementData.objects.values('timestamp', 'farm') \
-            .annotate(count=Count('id')) \
-            .filter(count__gt=1)
-
-        # Loop through each duplicate and remove the extras
-        for duplicate in duplicates:
-            timestamp = duplicate['timestamp']
-            farm = duplicate['farm']
-            
-            # Get all records with the same timestamp and farm, sorted by ID (or another field, like timestamp)
-            duplicate_records = PvMeasurementData.objects.filter(timestamp=timestamp, farm=farm).order_by('id')
-            
-            # Keep the first record (or based on any other criteria) and delete the rest
-            duplicate_records[1:].delete()  # Deletes everything except the first record
-
-
+    def handle(self, *args, **kwargs):        
 
         # Get the first item from ForecastData and get the date
         initial_date = '2024-08-08T00:00:00Z'
