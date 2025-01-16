@@ -61,6 +61,7 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset
 
         return queryset
+    
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         page = self.paginate_queryset(queryset)
@@ -68,7 +69,7 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
             if 'all' in request.query_params:
                 serializer = AggregatedPvMeasurementDataSerializer(queryset, many=True)
             else:
-                serializer = self.get_serializer(queryset, many=True)
+                serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)    
             
         if 'all' in request.query_params:
