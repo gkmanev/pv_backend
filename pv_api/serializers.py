@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PvTechnicalData, PvMeasurementData
+from .models import PvTechnicalData, PvMeasurementData, ForecastDataDayAhead
 
 class PvDataSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,3 +20,9 @@ class AggregatedPvMeasurementDataSerializer(serializers.Serializer):
     avg_direct_radiation = serializers.DecimalField(max_digits=10, decimal_places=2)
     latitude = serializers.DecimalField(max_digits=10, decimal_places=4)
     longitude = serializers.DecimalField(max_digits=10, decimal_places=4)
+
+
+class ForecastDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForecastDataDayAhead
+        fields = '__all__'

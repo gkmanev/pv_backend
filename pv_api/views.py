@@ -1,10 +1,10 @@
 from rest_framework import viewsets
-from .models import PvTechnicalData, PvMeasurementData
+from .models import PvTechnicalData, PvMeasurementData, ForecastDataDayAhead
 from django.db.models import Max
 from django.db.models.functions import TruncDate
 from django.db.models import Sum, Avg, F, Q
 from datetime import datetime, timedelta
-from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer
+from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer, ForecastDataSerializer
 from .pagination import CustomPageNumberPagination
 
 
@@ -55,3 +55,13 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         if self.request.query_params.get('all'):
             return AggregatedPvMeasurementDataSerializer
         return self.serializer_class
+    
+
+class ForecastDataDayAheadViewSet(viewsets.ModelViewSet):
+    queryset = ForecastDataDayAhead.objects.all().order_by('timestamp')
+    serializer_class = ForecastDataSerializer
+    pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset
