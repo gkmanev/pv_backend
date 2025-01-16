@@ -2,13 +2,31 @@
 from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 from pv_api.models import PvMeasurementData, ForecastDataDayAhead
-from django.db.models import Min, Max
+from django.db.models import Min, Max, Count
 import pandas as pd
 
 class Command(BaseCommand):
     help = 'Import data from combined_weather_and_df_dam.csv into PvMeasurementData'
 
     def handle(self, *args, **kwargs):
+
+        duplicates = PvMeasurementData.objects.values('timestamp', 'farm') \
+        .annotate(count=Count('id')) \
+        .filter(count__gt=1)
+
+        # Loop through each duplicate and remove the extras
+        for duplicate in duplicates:
+            timestamp = duplicate['timestamp']
+            farm = duplicate['farm']
+            
+            # Get all records with the same timestamp and farm, sorted by ID (or other criteria)
+            duplicate_records = PvMeasurementData.objects.filter(timestamp=timestamp, farm=farm).order_by('id')
+            
+            # Keep the first record and delete the rest
+            duplicate_records[1:].delete()
+
+
+
         # Get the first item from ForecastData and get the date
         initial_date = '2024-08-08T00:00:00Z'
         # start_date = initial_date - timedelta(days=10)
