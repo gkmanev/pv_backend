@@ -27,6 +27,9 @@ class PvMeasurementData(models.Model):
     direct_radiation = models.DecimalField(max_digits=10, decimal_places=2)
     min_production = models.DecimalField(max_digits=10, decimal_places=3, default=0)
     max_production = models.DecimalField(max_digits=10, decimal_places=3, default=0)
+    class Meta:
+        unique_together = ('timestamp', 'ppe')
+    
 
 class ForecastDataDayAhead(models.Model):
     # This model is used to store the forecast data

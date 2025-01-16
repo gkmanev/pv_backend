@@ -31,9 +31,9 @@ class Command(BaseCommand):
                 df['time'] = df['timestamp'].dt.strftime('%H:%M')
                 
                 # Group by farm and time, calculate the min of production
-                result_min = df.groupby(['farm', 'time'])['production'].min().reset_index()
-                result_max = df.groupby(['farm', 'time'])['production'].max().reset_index()
-                result = pd.merge(result_min, result_max, on=['farm', 'time'], suffixes=('_min', '_max'))  
+                result_min = df.groupby(['ppe', 'time'])['production'].min().reset_index()
+                result_max = df.groupby(['ppe', 'time'])['production'].max().reset_index()
+                result = pd.merge(result_min, result_max, on=['ppe', 'time'], suffixes=('_min', '_max'))  
                 
                 start_period = datetime.fromisoformat(initial_date.replace('Z', '+00:00'))
                 end_period = start_period + timedelta(days=1)
@@ -45,7 +45,7 @@ class Command(BaseCommand):
                         timestamp_str = f"{start_period.date()} {row['time']}:00"
                         timestamp = pd.to_datetime(timestamp_str)                        
                         obj, created = PvMeasurementData.objects.get_or_create(
-                            timestamp=timestamp, farm=row['farm']
+                            timestamp=timestamp, ppe=row['ppe']
                         )
                         obj.min_production = row['production_min']
                         obj.max_production = row['production_max']
