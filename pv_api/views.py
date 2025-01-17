@@ -6,6 +6,7 @@ from django.db.models import Sum, Avg, F, Q
 from datetime import datetime, timedelta
 from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer, ForecastDataSerializer
 from .pagination import CustomPageNumberPagination
+from pv_api.tasks import task_min_max_intervals
 
 
 
@@ -43,7 +44,9 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         elif day_ahead:
             today = datetime.now().date()
             queryset = queryset.filter(timestamp__gte=today)
+
         elif start_date and end_date:
+            task_min_max_intervals.delay(start_date)
             queryset = queryset.filter(timestamp__range=[start_date, end_date])
 
         if farm:
