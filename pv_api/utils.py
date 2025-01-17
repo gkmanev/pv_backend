@@ -32,7 +32,7 @@ def fetch_and_store_pv_data():
 
 
 def calculate_min_max_intervals(initial_date):
-        
+        print(f"Initial Date":{initial_date})
         # How many days you choose to calculate the confidance intervals
         start_date = initial_date - timedelta(days=8)    
         query = PvMeasurementData.objects.filter(timestamp__range=[start_date, initial_date])
@@ -63,7 +63,7 @@ def calculate_min_max_intervals(initial_date):
                     for _, row in result.iterrows():
                         # Get the corresponding ForecastDataDayAhead object
                         timestamp_str = f"{start_period} {row['time']}:00"
-                        print(timestamp_str)
+                        
                         timestamp = pd.to_datetime(timestamp_str)                        
                         obj, created = PvMeasurementData.objects.get_or_create(
                             timestamp=timestamp, ppe=row['ppe']
