@@ -38,8 +38,7 @@ def calculate_min_max_intervals(initial_date):
         query = PvMeasurementData.objects.filter(timestamp__range=[start_date, initial_date])
         if query.exists():
             data = query.values('id', 'timestamp', 'production', 'farm', 'ppe')
-            df = pd.DataFrame(data)
-            print(df)
+            df = pd.DataFrame(data)            
             # Check if DataFrame is empty
             if df.empty:
                 print("There are no data!")
@@ -56,22 +55,22 @@ def calculate_min_max_intervals(initial_date):
                 result_max = df.groupby(['ppe', 'time'])['production'].max().reset_index()
                 result = pd.merge(result_min, result_max, on=['ppe', 'time'], suffixes=('_min', '_max'))  
                 
-                start_period = datetime.fromisoformat(initial_date.replace('Z', '+00:00')) + timedelta(days=1)
+                start_period = initial_date + timedelta(days=1)
                 end_period = start_period + timedelta(days=1)
 
-                # query_for_update_min_max = PvMeasurementData.objects.filter(timestamp__range=(start_period, end_period))
-                # if query_for_update_min_max.exists():
-                #     for _, row in result.iterrows():
-                #         # Get the corresponding ForecastDataDayAhead object
-                #         timestamp_str = f"{start_period.date()} {row['time']}:00"
-                #         timestamp = pd.to_datetime(timestamp_str)                        
-                #         obj, created = PvMeasurementData.objects.get_or_create(
-                #             timestamp=timestamp, ppe=row['ppe']
-                #         )
-                #         obj.min_production = row['production_min']
-                #         obj.max_production = row['production_max']
+                query_for_update_min_max = PvMeasurementData.objects.filter(timestamp__range=(start_period, end_period))
+                if query_for_update_min_max.exists():
+                    for _, row in result.iterrows():
+                        # Get the corresponding ForecastDataDayAhead object
+                        timestamp_str = f"{start_period.date()} {row['time']}:00"
+                        timestamp = pd.to_datetime(timestamp_str)                        
+                        obj, created = PvMeasurementData.objects.get_or_create(
+                            timestamp=timestamp, ppe=row['ppe']
+                        )
+                        obj.min_production = row['production_min']
+                        obj.max_production = row['production_max']
 
-                #         obj.save() 
+                        obj.save() 
 
     
         
