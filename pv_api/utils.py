@@ -62,7 +62,7 @@ def calculate_min_max_intervals(initial_date):
                 if query_for_update_min_max.exists():
                     for _, row in result.iterrows():
                         # Get the corresponding ForecastDataDayAhead object
-                        timestamp_str = f"{start_period.date()} {row['time']}:00"
+                        timestamp_str = f"{start_period} {row['time']}:00"
                         timestamp = pd.to_datetime(timestamp_str)                        
                         obj, created = PvMeasurementData.objects.get_or_create(
                             timestamp=timestamp, ppe=row['ppe']
