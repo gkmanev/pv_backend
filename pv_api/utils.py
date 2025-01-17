@@ -63,6 +63,7 @@ def calculate_min_max_intervals(initial_date):
                     for _, row in result.iterrows():
                         # Get the corresponding ForecastDataDayAhead object
                         timestamp_str = f"{start_period} {row['time']}:00"
+                        print(timestamp_str)
                         timestamp = pd.to_datetime(timestamp_str)                        
                         obj, created = PvMeasurementData.objects.get_or_create(
                             timestamp=timestamp, ppe=row['ppe']
@@ -70,7 +71,7 @@ def calculate_min_max_intervals(initial_date):
                         obj.min_production = row['production_min']
                         obj.max_production = row['production_max']
 
-                        obj.save() 
+                        #obj.save() 
 
     
         
