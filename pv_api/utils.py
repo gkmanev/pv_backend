@@ -32,7 +32,7 @@ def fetch_and_store_pv_data():
 
 
 def calculate_min_max_intervals(initial_date):
-        print(f"Initial Date":{initial_date})
+        print(f"Initial Date:{initial_date}")
         # How many days you choose to calculate the confidance intervals
         start_date = initial_date - timedelta(days=8)    
         query = PvMeasurementData.objects.filter(timestamp__range=[start_date, initial_date])
