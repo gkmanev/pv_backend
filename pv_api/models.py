@@ -1,4 +1,74 @@
 from django.db import models
+from datetime import datetime, timedelta
+import pandas as pd
+
+
+class ConfidanceManager(models.Manager):
+        
+        def get_queryset(self):
+            return super().get_queryset()
+        
+
+        def calculate_confidance(self, initial_date):
+            start_date = initial_date - timedelta(days=8)
+            query = PvMeasurementData.objects.filter(timestamp__range=[start_date, initial_date])
+            
+            if not query.exists():
+                print("No data available for the given range.")
+                return
+
+            data = query.values('id', 'timestamp', 'production', 'farm', 'ppe')
+            df = pd.DataFrame(data)
+
+            if df.empty:
+                print("There are no data!")
+                return
+
+            # Process data
+            df['timestamp'] = pd.to_datetime(df['timestamp'])
+            df['production'] = pd.to_numeric(df['production'], errors='coerce')
+            df['time'] = df['timestamp'].dt.strftime('%H:%M')
+            
+            # Group by PPE and time to calculate min and max
+            grouped = df.groupby(['ppe', 'time'])['production']
+            result = grouped.agg(production_min='min', production_max='max').reset_index()
+
+            # Prepare for updates/creation
+            start_period = initial_date
+            end_period = start_period + timedelta(days=1)
+            existing_data = PvMeasurementData.objects.filter(timestamp__range=(start_period, end_period))
+            
+            existing_map = {(obj.ppe, obj.timestamp.strftime('%H:%M')): obj for obj in existing_data}
+            objs_to_update = []
+            objs_to_create = []
+
+            for _, row in result.iterrows():
+                timestamp_str = f"{start_period} {row['time']}:00"
+                timestamp = pd.to_datetime(timestamp_str)
+
+                key = (row['ppe'], row['time'])
+                if key in existing_map:
+                    obj = existing_map[key]
+                    obj.min_production = row['production_min']
+                    obj.max_production = row['production_max']
+                    objs_to_update.append(obj)
+                else:
+                    objs_to_create.append(
+                        PvMeasurementData(
+                            timestamp=timestamp,
+                            ppe=row['ppe'],
+                            min_production=row['production_min'],
+                            max_production=row['production_max']
+                        )
+                    )
+
+            # Perform bulk operations
+            if objs_to_create:
+                PvMeasurementData.objects.bulk_create(objs_to_create)
+            if objs_to_update:
+                PvMeasurementData.objects.bulk_update(objs_to_update, ['min_production', 'max_production'])         
+        
+
 
 class PvTechnicalData(models.Model):
     # This model is used to store the technical data of the PV installation fetched from the API
@@ -27,6 +97,8 @@ class PvMeasurementData(models.Model):
     direct_radiation = models.DecimalField(max_digits=10, decimal_places=2)
     min_production = models.DecimalField(max_digits=10, decimal_places=3, default=0)
     max_production = models.DecimalField(max_digits=10, decimal_places=3, default=0)
+    objects = models.Manager()
+    confidance = ConfidanceManager()
     class Meta:
         unique_together = ('timestamp', 'ppe')
     
