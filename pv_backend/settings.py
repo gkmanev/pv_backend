@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from celery.schedules import crontab
-
+from datetime import datetime, timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -63,7 +63,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_celery_beat',     
     'django_filters',
-    'pv_api',  # Add your application here   
+    'pv_api', 
+    'rest_framework_simplejwt' 
 ]
 
 MIDDLEWARE = [
@@ -80,8 +81,16 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'pv_backend.urls'
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # 'PAGE_SIZE': 10000,  # Customize this based on your needs
+       'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=240),  # Access token valid for 1 hour
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=77),  # Refresh token valid for 7 days
+    'ROTATE_REFRESH_TOKENS': False,  # Do not change refresh token
+    'BLACKLIST_AFTER_ROTATION': False,  # Do not blacklist tokens after refresh
 }
 
 TEMPLATES = [
@@ -105,23 +114,23 @@ WSGI_APPLICATION = 'pv_backend.wsgi.application'
 #Database
 #https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_NAME'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': 'db',
-        'PORT': 5432,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('POSTGRES_NAME'),
+#         'USER': os.getenv('POSTGRES_USER'),
+#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+#         'HOST': 'db',
+#         'PORT': 5432,
+#     }
+# }
 
 CACHES = {
     'default': {
