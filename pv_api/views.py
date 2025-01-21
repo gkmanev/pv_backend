@@ -93,6 +93,6 @@ class LastNUniqueDataPointsView(APIView):
     """
     def get(self, request, *args, **kwargs):
         # Use your custom manager
-        unique_data = PvTechnicalData.unique_data.filter(parameter_id=719)  
+        unique_data = PvTechnicalData.unique_data.all() 
         serializer = PvDataSerializer(unique_data, many=True)
         return Response(serializer.data)

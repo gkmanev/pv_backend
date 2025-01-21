@@ -67,12 +67,13 @@ class ConfidanceManager(models.Manager):
             if objs_to_create:
                 PvMeasurementData.objects.bulk_create(objs_to_create)
             if objs_to_update:
-                PvMeasurementData.objects.bulk_update(objs_to_update, ['min_production', 'max_production'])         
+                PvMeasurementData.objects.bulk_update(objs_to_update, ['min_production', 'max_production'])    
 
-class LastNUniqueDataPointsManager(models.Manager):
-    
+
+class LastNUniqueDataPointsManager(models.Manager):    
     def get_queryset(self):        
         queryset = super().get_queryset()
+        queryset = queryset.filter(parameter_id=719)
         last_record = queryset.order_by('-signal_time').first()
         if last_record:
             today = last_record.signal_time.date()
