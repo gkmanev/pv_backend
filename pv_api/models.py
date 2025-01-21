@@ -99,6 +99,7 @@ class PvTechnicalData(models.Model):
     signal_time = models.DateTimeField()
     signal_value = models.DecimalField(max_digits=10, decimal_places=3)
     unit = models.CharField(max_length=10)
+    unique_data = LastNUniqueDataPointsManager()
 
     def __str__(self):
         return f"{self.installation_name} - {self.signal_uid}"
@@ -120,7 +121,7 @@ class PvMeasurementData(models.Model):
     max_production = models.DecimalField(max_digits=10, decimal_places=3, default=0)
     objects = models.Manager()
     confidance = ConfidanceManager()
-    unique_data = LastNUniqueDataPointsManager()
+    
     class Meta:
         unique_together = ('timestamp', 'ppe')
     
