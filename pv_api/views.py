@@ -91,9 +91,8 @@ class LastNUniqueDataPointsView(APIView):
     """
     Custom APIView to return data from the manager that produces a list.
     """
-
     def get(self, request, *args, **kwargs):
         # Use your custom manager
-        unique_data = PvTechnicalData.unique_data.all()  # Replace with the manager method
+        unique_data = PvTechnicalData.unique_data.filter(parameter_id=719)  
         serializer = PvDataSerializer(unique_data, many=True)
         return Response(serializer.data)
