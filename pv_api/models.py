@@ -73,7 +73,7 @@ class LastNUniqueDataPointsManager(models.Manager):
     
     def get_queryset(self):        
         queryset = super().get_queryset()
-        last_record = queryset.order_by('-timestamp').first()
+        last_record = queryset.order_by('-signal_time').first()
         if last_record:
             today = last_record.timestamp.date()
         else:
