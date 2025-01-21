@@ -13,7 +13,7 @@ class PvDataViewSet(viewsets.ModelViewSet):
     queryset = PvTechnicalData.objects.all().order_by('signal_time')
     
     today = datetime.now().date()
-    queryset = queryset.filter(signal_time__gte=today, parameter_id=719,installation_name='Arcus')
+    queryset = queryset.filter(signal_time__gte=today, parameter_id=720,installation_name='Arcus')
     
     serializer_class = PvDataSerializer
 
