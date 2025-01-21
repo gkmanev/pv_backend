@@ -11,6 +11,10 @@ from .serializers import PvDataSerializer, PvMeasurementDataSerializer, Aggregat
 
 class PvDataViewSet(viewsets.ModelViewSet):
     queryset = PvTechnicalData.objects.all().order_by('signal_time')
+    
+    today = datetime.now().date()
+    queryset = queryset.filter(signal_time__gte=today)
+    
     serializer_class = PvDataSerializer
 
 class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
