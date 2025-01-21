@@ -81,3 +81,15 @@ class ForecastDataDayAheadViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset
+    
+
+class LastNUniqueDataPointsView(APIView):
+    """
+    Custom APIView to return data from the manager that produces a list.
+    """
+
+    def get(self, request, *args, **kwargs):
+        # Use your custom manager
+        unique_data = PvMeasurementData.unique_data.all()  # Replace with the manager method
+        serializer = PvMeasurementDataSerializer(unique_data, many=True)
+        return Response(serializer.data)

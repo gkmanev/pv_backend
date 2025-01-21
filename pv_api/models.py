@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import datetime, timedelta
 import pandas as pd
+from django.db.models import F
 
 
 class ConfidanceManager(models.Manager):
@@ -67,7 +68,27 @@ class ConfidanceManager(models.Manager):
                 PvMeasurementData.objects.bulk_create(objs_to_create)
             if objs_to_update:
                 PvMeasurementData.objects.bulk_update(objs_to_update, ['min_production', 'max_production'])         
+
+class LastNUniqueDataPointsManager(models.Manager):
+    
+    def get_queryset(self):        
+        queryset = super().get_queryset()
+        last_record = queryset.order_by('-timestamp').first()
+        if last_record:
+            today = last_record.timestamp.date()
+        else:
+            today = datetime.now().date()
+
+        unique_ppe = set()
+        unique_data = []
+
+        for item in queryset.filter(timestamp__date=today):
+            if item.ppe not in unique_ppe:
+                unique_ppe.add(item.ppe)                
+                unique_data.append(item)
         
+        return unique_data
+    
 
 
 class PvTechnicalData(models.Model):
@@ -99,6 +120,7 @@ class PvMeasurementData(models.Model):
     max_production = models.DecimalField(max_digits=10, decimal_places=3, default=0)
     objects = models.Manager()
     confidance = ConfidanceManager()
+    unique_data = LastNUniqueDataPointsManager()
     class Meta:
         unique_together = ('timestamp', 'ppe')
     
