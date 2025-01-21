@@ -100,7 +100,7 @@ class PvTechnicalData(models.Model):
     signal_value = models.DecimalField(max_digits=10, decimal_places=3)
     unit = models.CharField(max_length=10)
     unique_data = LastNUniqueDataPointsManager()
-
+    objects = models.Manager()
     def __str__(self):
         return f"{self.installation_name} - {self.signal_uid}"
     
