@@ -109,15 +109,15 @@ class PvTechnicalData(models.Model):
 
 class PvMeasurementData(models.Model):
     # This model is used to store the actual measurement data    
-    timestamp = models.DateTimeField()
-    production = models.DecimalField(max_digits=10, decimal_places=3)
-    ppe = models.CharField(max_length=50)  # Assuming PPE values are strings
-    farm = models.CharField(max_length=100)
-    latitude = models.DecimalField(max_digits=10, decimal_places=4)
-    longitude = models.DecimalField(max_digits=10, decimal_places=4)
-    temperature_2m = models.DecimalField(max_digits=10, decimal_places=2)
-    uv_index = models.DecimalField(max_digits=10, decimal_places=2)
-    direct_radiation = models.DecimalField(max_digits=10, decimal_places=2)
+    timestamp = models.DateTimeField(default=datetime.now)
+    production = models.DecimalField(max_digits=10, decimal_places=3, default=0)
+    ppe = models.CharField(max_length=50, default='')  # Assuming PPE values are strings
+    farm = models.CharField(max_length=100, default='')
+    latitude = models.DecimalField(max_digits=10, decimal_places=4, default=0)
+    longitude = models.DecimalField(max_digits=10, decimal_places=4, default=0)
+    temperature_2m = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    uv_index = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    direct_radiation = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     min_production = models.DecimalField(max_digits=10, decimal_places=3, default=0)
     max_production = models.DecimalField(max_digits=10, decimal_places=3, default=0)
     objects = models.Manager()

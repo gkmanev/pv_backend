@@ -28,7 +28,7 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         farm = self.request.query_params.get('farm')
         start_date = self.request.query_params.get('start_date')
         end_date = self.request.query_params.get('end_date')
-        
+        ppe = self.request.query_params.get('ppe')
 
         if aggregate_all:
             queryset = (
@@ -58,6 +58,8 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         elif start_date and end_date:         
             if farm:
                 queryset = queryset.filter(timestamp__range=[start_date, end_date],farm=farm)
+            if ppe:
+                queryset = queryset.filter(timestamp__range=[start_date, end_date],ppe=ppe)
             else:
                 queryset = queryset.filter(timestamp__range=[start_date, end_date])
         
