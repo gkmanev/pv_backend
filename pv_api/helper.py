@@ -50,12 +50,13 @@ class SFTPDataProcessor:
                         latitude = it['latitude']
                         longitude = it['longitude']
                         farm = it['farm']
-                   
+                        production = round(production, 2)
+                        production_in_mw = production / 1000
                         PvMeasurementData.objects.update_or_create(
                             timestamp=timestamp,
                             ppe=self.ppe,
                             defaults={
-                            'production': production,
+                            'production': production_in_mw,
                             'latitude': latitude,
                             'longitude': longitude,   
                             'farm': farm,                
