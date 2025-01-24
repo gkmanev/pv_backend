@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Import data from combined_weather_and_df_dam.csv into PvMeasurementData'
 
     def handle(self, *args, **kwargs):
-        queryset = PvMeasurementData.objects.filter(timestamp__gte='2023-06-30', timestamp__lte='2023-09-30')
+        queryset = PvMeasurementData.objects.filter(timestamp__gte='2023-09-30', timestamp__lte='2023-12-31')
         project_mapping_path = os.path.join(settings.BASE_DIR, 'projects_mapping.json')
         project_mapping = []
         try:
@@ -25,8 +25,7 @@ class Command(BaseCommand):
         update_data = []
         for data_point in queryset:
             for it in project_mapping:
-                if data_point.ppe == it['PPE']:    
-                    print("HERE")               
+                if data_point.ppe == it['PPE']:                             
                     # Rename data_point.installation_name to it['farm']
                     data_point.farm = it['farm']                    
                     update_data.append(data_point)
