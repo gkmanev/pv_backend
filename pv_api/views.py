@@ -30,7 +30,7 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         aggregate_all = self.request.query_params.get('all')
-        day_ahead = self.request.query_params.get('day_ahead')
+        day_ahead = self.request.query_params.get('day-ahead')
         farm = self.request.query_params.get('farm')
         start_date = self.request.query_params.get('start_date')
         end_date = self.request.query_params.get('end_date')
