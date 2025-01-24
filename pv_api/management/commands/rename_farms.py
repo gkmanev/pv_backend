@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Import data from combined_weather_and_df_dam.csv into PvMeasurementData'
 
     def handle(self, *args, **kwargs):
-        queryset = PvMeasurementData.objects.filter(timestamp__gte='2023-01-01', timestamp__lte='2023-01-31')
+        queryset = PvMeasurementData.objects.all()
         project_mapping_path = os.path.join(settings.BASE_DIR, 'projects_mapping.json')
         project_mapping = []
         try:
@@ -21,14 +21,18 @@ class Command(BaseCommand):
                 
         except Exception as e:
             print(f"Error loading project mapping file: {e}")
+
+        update_data = []
         for data_point in queryset:
             for it in project_mapping:
                 if data_point.ppe == it['PPE']:    
                     print("HERE")               
                     # Rename data_point.installation_name to it['farm']
                     data_point.farm = it['farm']                    
-                    data_point.save()
-                    print(f"Data point updated. Timestamp: {data_point.timestamp}")
+                    update_data.append(data_point)
+
+        PvMeasurementData.objects.bulk_update(update_data, ['farm'], batch_size=1000)
+        print(f"{len(update_data)} data points updated.")
 
             
 
