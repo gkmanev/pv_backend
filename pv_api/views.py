@@ -17,13 +17,7 @@ class PvDataViewSet(viewsets.ModelViewSet):
         farm = self.request.query_params.get('farm')
         queryset = queryset.filter(signal_time__gte=today)
         if farm:
-            queryset = queryset.filter(installation_name=farm)
-
-
-
-    today = datetime.now().date()
-    queryset = queryset.filter(signal_time__gte=today, parameter_id=720,installation_name='Arcus')
-    
+            queryset = queryset.filter(installation_name=farm)    
     serializer_class = PvDataSerializer
 
 class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
