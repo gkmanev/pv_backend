@@ -18,7 +18,10 @@ class PvDataViewSet(viewsets.ModelViewSet):
         queryset = queryset.filter(signal_time__gte=today)
         if farm:
             queryset = queryset.filter(installation_name=farm)    
+        return queryset
     serializer_class = PvDataSerializer
+
+
 
 class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = PvMeasurementData.objects.all().order_by('timestamp')
