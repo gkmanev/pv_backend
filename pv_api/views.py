@@ -62,8 +62,8 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
                        
         
         elif day_ahead:
-            today = datetime.now().date()
-            queryset = queryset.filter(timestamp__gte=today)
+            yesterday = datetime.now().date() - timedelta(days=1)
+            queryset = queryset.filter(timestamp__gte=yesterday)
 
         elif start_date and end_date:         
             queryset = queryset.filter(timestamp__range=[start_date, end_date])
