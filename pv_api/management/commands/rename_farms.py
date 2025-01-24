@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Import data from combined_weather_and_df_dam.csv into PvMeasurementData'
 
     def handle(self, *args, **kwargs):
-        queryset = PvMeasurementData.objects.filter(timestamp__gte='2024-01-01', timestamp__lte='2024-03-31')
+        queryset = PvMeasurementData.objects.filter(timestamp__gte='2024-03-31', timestamp__lte='2024-09-30')
         project_mapping_path = os.path.join(settings.BASE_DIR, 'projects_mapping.json')
         project_mapping = []
         try:
