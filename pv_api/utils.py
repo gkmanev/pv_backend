@@ -23,7 +23,7 @@ def fetch_and_store_pv_data():
                     parameter_id=item['parameter_id'],
                     installation_name=item['installation_name'],
                     signal_uid=item['signal_uid'],
-                    signal_time=minute_signal_time,
+                    timestamp=minute_signal_time,
                     signal_value=signal_value,
                     unit=item['unit'],
                 )
