@@ -13,6 +13,7 @@ class PvDataViewSet(viewsets.ModelViewSet):
     queryset = PvTechnicalData.objects.all().order_by('signal_time')
     def get_queryset(self):
         queryset = super().get_queryset()
+        queryset = queryset.filter(parameter_id=720)
         today = datetime.now().date()
         farm = self.request.query_params.get('farm')
         queryset = queryset.filter(signal_time__gte=today)
