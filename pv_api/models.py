@@ -97,7 +97,7 @@ class PvTechnicalData(models.Model):
     parameter_id = models.IntegerField()
     installation_name = models.CharField(max_length=100)
     signal_uid = models.CharField(max_length=100)
-    timestamp = models.DateTimeField(default=datetime.now)
+    timestamp = models.DateTimeField()
     signal_value = models.DecimalField(max_digits=10, decimal_places=3)
     unit = models.CharField(max_length=10)
     unique_data = LastNUniqueDataPointsManager()
