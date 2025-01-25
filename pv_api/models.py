@@ -74,7 +74,7 @@ class LastNUniqueDataPointsManager(models.Manager):
     def get_queryset(self):        
         queryset = super().get_queryset()
         queryset = queryset.filter(parameter_id=719)
-        last_record = queryset.order_by('-signal_time').first()
+        last_record = queryset.order_by('-timestamp').first()
         if last_record:
             today = last_record.signal_time.date()
         else:
@@ -82,7 +82,7 @@ class LastNUniqueDataPointsManager(models.Manager):
 
         unique_ppe = set()
         unique_data = []
-        filtered_queryset = queryset.filter(signal_time__date=today).order_by('-signal_time')
+        filtered_queryset = queryset.filter(signal_time__date=today).order_by('-timestamp')
         for item in filtered_queryset:
             if item.signal_uid not in unique_ppe:
                 unique_ppe.add(item.signal_uid)                
