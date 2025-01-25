@@ -11,14 +11,14 @@ from .serializers import PvDataSerializer, PvMeasurementDataSerializer, Aggregat
 
 class PvDataViewSet(viewsets.ModelViewSet):
     queryset = PvTechnicalData.objects.all().order_by('signal_time')
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #     today = datetime.now().date()
-    #     farm = self.request.query_params.get('farm')
-    #     queryset = queryset.filter(signal_time__gte=today)
-    #     if farm:
-    #         queryset = queryset.filter(installation_name=farm)    
-    #     return queryset
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        today = datetime.now().date()
+        farm = self.request.query_params.get('farm')
+        queryset = queryset.filter(signal_time__gte=today)
+        if farm:
+            queryset = queryset.filter(installation_name=farm)    
+        return queryset
     serializer_class = PvDataSerializer
 
 
