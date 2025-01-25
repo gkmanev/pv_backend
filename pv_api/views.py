@@ -16,7 +16,7 @@ class PvDataViewSet(viewsets.ModelViewSet):
         queryset = queryset.filter(parameter_id=720)
         today = datetime.now().date()
         farm = self.request.query_params.get('farm')
-        queryset = queryset.filter(signal_time__gte=today)
+        queryset = queryset.filter(timestamp__gte=today)
         if farm:
             queryset = queryset.filter(installation_name=farm)    
         return queryset
