@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer, ForecastDataSerializer
 
 class PvDataViewSet(viewsets.ModelViewSet):
-    queryset = PvTechnicalData.objects.all().order_by('signal_time')
+    queryset = PvTechnicalData.objects.all().order_by('timestamp')
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(parameter_id=720)
