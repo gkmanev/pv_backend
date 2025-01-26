@@ -25,7 +25,7 @@ class Command(BaseCommand):
             print(f"Error loading project mapping file: {e}")
         today = datetime.now().date()
         start_date = today - timedelta(days=1)
-        end_date = '2025-01-22'
+        end_date = start_date - timedelta(days=4)
         #end_date = start_date - timedelta(days=1)
         while start_date >= end_date:
             for it in project_mapping:
