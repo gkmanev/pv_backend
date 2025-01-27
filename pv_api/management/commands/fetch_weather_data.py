@@ -27,14 +27,14 @@ class Command(BaseCommand):
         except Exception as e:
             print(f"Error loading project mapping file: {e}")
         start = datetime.now().date()
-        end = start + timedelta(days=1)        
+        #end = start + timedelta(days=1)        
         for it in project_mapping:
             ppe = it.get("PPE", None)
             lat = it.get("latitude", None)
             lon = it.get("longitude", None)
             if ppe is not None and lat is not None and lon is not None: 
                 start_date = start 
-                end_date = end
+                end_date = start
                 weather_data = WeatherDataProcessor(start_date, end_date, lat, lon, ppe)
                 weather_data.fetch_and_store_weather_data()                     
             
