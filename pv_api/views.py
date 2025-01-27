@@ -11,8 +11,9 @@ from .serializers import PvDataSerializer, PvMeasurementDataSerializer, Aggregat
 
 class PvDataViewSet(viewsets.ModelViewSet):
     serializer_class = PvDataSerializer
+    queryset = PvTechnicalData.objects.all() 
     def get_queryset(self):
-        queryset = PvTechnicalData.objects.all()        
+        queryset = super().get_queryset()     
         farm = self.request.query_params.get('farm')        
         return queryset.resample.resample_to_15min(farm=farm)
 
