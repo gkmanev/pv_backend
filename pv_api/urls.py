@@ -4,7 +4,7 @@ from .views import PvDataViewSet, PvMeasurementDataViewSet, ForecastDataDayAhead
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = routers.DefaultRouter()
-
+router.register(r'pvdata', PvDataViewSet)
 router.register(r'pvmeasurementdata', PvMeasurementDataViewSet) 
 router.register(r'forecastdata', ForecastDataDayAheadViewSet)
 
@@ -15,5 +15,4 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),    
     path('confidence/', ConfidenceApiView.as_view(), name='confidence'),  # Add the standalone APIView
     path('last-n-unique/', LastNUniqueDataPointsView.as_view(), name='last-n-unique'),
-    path('pvdata/', PvDataViewSet.as_view(), name='pvdata'),
 ]
