@@ -1,38 +1,38 @@
 from django.db import models
 from datetime import datetime, timedelta
 import pandas as pd
-from django.db.models import F, Avg, Sum
+from django.db.models import F
 
 
 
 
 class ResemplePvTechnicalDataTo15Min(models.Manager):
-    # This manager is used to resample the technical data to 15 minutes. Currently the data is stored in 1 minutes interval
     def get_queryset(self):
         return super().get_queryset()
-        
-    def resample_to_15min(self, farm=None):
 
-        if farm:
-            # Retrieve the data from the database
-            data = self.get_queryset().filter(installation_name=farm).values('timestamp', 'parameter_id', 'signal_value', 'installation_name')
+    def resample_to_15min(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()  # Default to all data if no queryset provided
 
-            # Determine the aggregation function based on parameter_id
-            aggregation_function = Sum('signal_value') if data[0]['parameter_id'] == 720 else Avg('signal_value')
+        # Convert the data to a pandas DataFrame
+        data = queryset.values('timestamp', 'parameter_id', 'signal_value', 'installation_name')
+        df = pd.DataFrame(list(data))
+        if df.empty:
+            return []  # Handle the case where no data is returned
 
-            # Resample the data to 15 minutes intervals using Django ORM
-            resampled_data = (
-                data.annotate(
-                    rounded_timestamp=models.functions.TruncMinute('timestamp', precision=15)
-                )
-                .values('rounded_timestamp', 'parameter_id', 'installation_name')
-                .annotate(signal_value=aggregation_function)
-                .order_by('rounded_timestamp')
-            )
-            return resampled_data
-        
-        else:   
-            return None
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        df.set_index('timestamp', inplace=True)
+
+        # Group by parameter_id and resample based on logic
+        resampled_data = []
+        for param_id, group in df.groupby('parameter_id'):
+            if param_id == 720:
+                resampled_group = group.resample('15T').sum()
+            else:
+                resampled_group = group.resample('15T').mean()
+            resampled_data.extend(resampled_group.reset_index().to_dict(orient='records'))
+
+        return resampled_data
 
         
        

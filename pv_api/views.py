@@ -7,15 +7,33 @@ from django.db.models import Max
 from django.db.models.functions import TruncDate
 from django.db.models import Sum, Avg, F, Q
 from datetime import datetime, timedelta
-from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer, ForecastDataSerializer, ResampledPvTechnicalDataSerializer
+from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer, ForecastDataSerializer
 
-class PvDataViewSet(APIView):
 
-    def get(self, request, *args, **kwargs):  
-        farm = self.request.query_params.get('farm')      
-        resampled_data = PvTechnicalData.resample.resample_to_15min(farm=farm)
-        serializer = ResampledPvTechnicalDataSerializer(resampled_data, many=True)
-        return Response(serializer.data)
+class PvDataViewSet(viewsets.ModelViewSet):
+    queryset = PvTechnicalData.objects.all().order_by('timestamp')
+    serializer_class = PvDataSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # Filter data based on query parameters
+        today = datetime.now().date()
+        farm = self.request.query_params.get('farm')
+        queryset = queryset.filter(timestamp__gte=today)  # Filter by today's data
+        if farm:
+            queryset = queryset.filter(installation_name=farm)  # Filter by farm name
+        
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        # Call the filtered queryset and pass it to the manager for resampling
+        queryset = self.get_queryset()
+        resampled_data = PvTechnicalData.resample.resample_to_15min(queryset)
+
+        # Return the resampled data as a response
+        return Response(resampled_data, status=status.HTTP_200_OK)    
+   
 
 
 
