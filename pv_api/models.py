@@ -11,25 +11,28 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
     def get_queryset(self):
         return super().get_queryset()
         
-    def resample_to_15min(self):
+    def resample_to_15min(self, farm=None):
 
-        # Retrieve the data from the database
-        data = self.get_queryset().values('timestamp', 'parameter_id', 'signal_value', 'installation_name')
+        if farm:
+            # Retrieve the data from the database
+            data = self.get_queryset().filter(installation_name=farm).values('timestamp', 'parameter_id', 'signal_value', 'installation_name')
 
-        # Determine the aggregation function based on parameter_id
-        aggregation_function = Sum('signal_value') if data[0]['parameter_id'] == 720 else Avg('signal_value')
+            # Determine the aggregation function based on parameter_id
+            aggregation_function = Sum('signal_value') if data[0]['parameter_id'] == 720 else Avg('signal_value')
 
-        # Resample the data to 15 minutes intervals using Django ORM
-        resampled_data = (
-            data.annotate(
-                rounded_timestamp=models.functions.TruncMinute('timestamp', precision=15)
+            # Resample the data to 15 minutes intervals using Django ORM
+            resampled_data = (
+                data.annotate(
+                    rounded_timestamp=models.functions.TruncMinute('timestamp', precision=15)
+                )
+                .values('rounded_timestamp', 'parameter_id', 'installation_name')
+                .annotate(signal_value=aggregation_function)
+                .order_by('rounded_timestamp')
             )
-            .values('rounded_timestamp', 'parameter_id', 'installation_name')
-            .annotate(signal_value=aggregation_function)
-            .order_by('rounded_timestamp')
-        )
-
-        return resampled_data
+            return resampled_data
+        
+        else:   
+            return None
 
         
        
