@@ -13,12 +13,13 @@ from pv_api.models import PvMeasurementData
 
 
 class SFTPDataProcessor:
-    def __init__(self, ppe, seeking_date):
+    def __init__(self, ppe, farm, seeking_date):
         self.hostname = "skftp.enea.pl"
         self.port = 2222
         self.username = "gptp.urb"
         self.password = "Ju3D04dCJs"
         self.ppe = ppe
+        self.farm = farm
         self.seeking_date = seeking_date
         self.create_placeholders_for_today_and_tomorrow()
         
@@ -39,7 +40,7 @@ class SFTPDataProcessor:
                         'direct_radiation': 0,
                         'latitude': 0,
                         'longitude': 0,
-                        'farm': self.ppe
+                        'farm': self.farm
                     }
                 )
                 current_time += timedelta(minutes=15)

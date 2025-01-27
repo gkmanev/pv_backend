@@ -28,8 +28,9 @@ class Command(BaseCommand):
           
         for it in project_mapping:
             ppe = it.get("PPE", None)
+            farm = it.get("farm", None)
             if ppe is not None:                                    
-                processor = SFTPDataProcessor(ppe, seeking_date)
+                processor = SFTPDataProcessor(ppe, farm, seeking_date)
                 #processor.process_data()          
             
         print("Data fetched and stored in the database.")
