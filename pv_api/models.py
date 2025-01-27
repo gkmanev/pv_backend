@@ -1,9 +1,38 @@
 from django.db import models
 from datetime import datetime, timedelta
 import pandas as pd
-from django.db.models import F
+from django.db.models import F, Avg, Sum
 
 
+
+
+class ResemplePvTechnicalDataTo15Min(models.Manager):
+    # This manager is used to resample the technical data to 15 minutes. Currently the data is stored in 1 minutes interval
+    def get_queryset(self):
+        return super().get_queryset()
+        
+    def resample_to_15min(self):
+
+        # Retrieve the data from the database
+        data = self.get_queryset().values('timestamp', 'parameter_id', 'signal_value', 'installation_name')
+
+        # Determine the aggregation function based on parameter_id
+        aggregation_function = Sum('signal_value') if data[0]['parameter_id'] == 720 else Avg('signal_value')
+
+        # Resample the data to 15 minutes intervals using Django ORM
+        resampled_data = (
+            data.annotate(
+                rounded_timestamp=models.functions.TruncMinute('timestamp', precision=15)
+            )
+            .values('rounded_timestamp', 'parameter_id', 'installation_name')
+            .annotate(signal_value=aggregation_function)
+            .order_by('rounded_timestamp')
+        )
+
+        return resampled_data
+
+        
+       
 class ConfidanceManager(models.Manager):
         
         def get_queryset(self):
@@ -102,6 +131,7 @@ class PvTechnicalData(models.Model):
     unit = models.CharField(max_length=10)
     unique_data = LastNUniqueDataPointsManager()
     objects = models.Manager()
+    resample = ResemplePvTechnicalDataTo15Min()
     def __str__(self):
         return f"{self.installation_name} - {self.signal_uid}"
     
