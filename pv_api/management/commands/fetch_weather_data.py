@@ -26,21 +26,18 @@ class Command(BaseCommand):
                 print(f"Project mapping file not found: {project_mapping_path}")
         except Exception as e:
             print(f"Error loading project mapping file: {e}")
-        end = datetime.now().date()
-        start = end - timedelta(days=1)
-        
-
-        while start >= datetime(2025, 1, 20).date():
-            for it in project_mapping:
-                ppe = it.get("PPE", None)
-                lat = it.get("latitude", None)
-                lon = it.get("longitude", None)
-                if ppe is not None and lat is not None and lon is not None: 
-                    start_date = start 
-                    end_date = start_date + timedelta(days=1)
-                    weather_data = WeatherDataProcessor(start_date, end_date, lat, lon, ppe)
-                    weather_data.fetch_and_store_weather_data()                     
-            start = start - timedelta(days=1)
+        start = datetime.now().date()
+        end = start + timedelta(days=1)        
+        for it in project_mapping:
+            ppe = it.get("PPE", None)
+            lat = it.get("latitude", None)
+            lon = it.get("longitude", None)
+            if ppe is not None and lat is not None and lon is not None: 
+                start_date = start 
+                end_date = end
+                weather_data = WeatherDataProcessor(start_date, end_date, lat, lon, ppe)
+                weather_data.fetch_and_store_weather_data()                     
+            
         print("Data fetched and stored in the database.")
 
 
