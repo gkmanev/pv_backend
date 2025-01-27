@@ -20,26 +20,29 @@ class SFTPDataProcessor:
         self.password = "Ju3D04dCJs"
         self.ppe = ppe
         self.seeking_date = seeking_date
+        self.create_placeholders_for_tomorrow()
 
     def create_placeholders_for_tomorrow(self):
         tomorrow = self.seeking_date + timedelta(days=2)
         print(tomorrow)
-    #     queryset = PvMeasurementData.objects.filter(timestamp__date=tomorrow, ppe=self.ppe)
-    #     if not queryset.exists():
-    #         print(f"No data found for tomorrow's date {tomorrow}. Creating placeholders...")
-    #         queryset = PvMeasurementData.objects.filter(timestamp__date=self.seeking_date, ppe=self.ppe)
-    #         for obj in queryset:
-    #             obj.timestamp = obj.timestamp + timedelta(days=1)
-    #             obj.production = 0
-    #             obj.save()
-    #         print("Placeholders created.")
-    #     else:
-    #         print(f"Data for tomorrow's date {tomorrow} already exists.")
+        queryset = PvMeasurementData.objects.filter(timestamp__date=tomorrow, ppe=self.ppe)
+        if not queryset.exists():
+            print(f"No data found for tomorrow's date {tomorrow}. Creating placeholders...")
+            queryset = PvMeasurementData.objects.filter(timestamp__date=self.seeking_date, ppe=self.ppe)
+            for obj in queryset:
+                print(obj.timestamp)
+        #     for obj in queryset:
+        #         obj.timestamp = obj.timestamp + timedelta(days=1)
+        #         obj.production = 0
+        #         obj.save()
+        #     print("Placeholders created.")
+        # else:
+        #     print(f"Data for tomorrow's date {tomorrow} already exists.")
 
-    # def prepare_file_name(self):
 
-    #     file_date_to_str = self.seeking_date.strftime("%Y%m%d")
-    #     return f"ENED_{self.ppe}_LN01_COP_{file_date_to_str}.dat"
+    def prepare_file_name(self):
+        file_date_to_str = self.seeking_date.strftime("%Y%m%d")
+        return f"ENED_{self.ppe}_LN01_COP_{file_date_to_str}.dat"
     
     def save_to_db(self, data_list):
 
