@@ -10,8 +10,9 @@ from datetime import datetime, timedelta
 from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer, ForecastDataSerializer, ResampledPvTechnicalDataSerializer
 
 class PvDataViewSet(APIView):
-    def get(self, request, farm):
-        
+
+    def get(self, request, args, **kwargs):  
+        farm = self.request.query_params.get('farm')      
         resampled_data = PvTechnicalData.resample.resample_to_15min(farm=farm)
         serializer = ResampledPvTechnicalDataSerializer(resampled_data, many=True)
         return Response(serializer.data)
