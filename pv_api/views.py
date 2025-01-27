@@ -14,12 +14,14 @@ class PvDataViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(parameter_id=720)
+       
         today = datetime.now().date()
         farm = self.request.query_params.get('farm')
         queryset = queryset.filter(timestamp__gte=today)
+        queryset = queryset.resample.resample_to_15min()
         if farm:
             queryset = queryset.filter(installation_name=farm)    
-        return queryset
+        return queryset    
     serializer_class = PvDataSerializer
 
 
@@ -67,10 +69,7 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
                        
         
         elif start_date and end_date:         
-            queryset = queryset.filter(timestamp__range=[start_date, end_date])
-        
-        
-        
+            queryset = queryset.filter(timestamp__range=[start_date, end_date])      
 
         return queryset
 
