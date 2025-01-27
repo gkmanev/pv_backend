@@ -26,7 +26,7 @@ class Command(BaseCommand):
                 print(f"Project mapping file not found: {project_mapping_path}")
         except Exception as e:
             print(f"Error loading project mapping file: {e}")
-        start = datetime.now().date()
+        start = datetime.now().date() - timedelta(days=1)
         #end = start + timedelta(days=1)        
         for it in project_mapping:
             ppe = it.get("PPE", None)
