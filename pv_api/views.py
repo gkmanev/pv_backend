@@ -10,19 +10,11 @@ from datetime import datetime, timedelta
 from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer, ForecastDataSerializer
 
 class PvDataViewSet(viewsets.ModelViewSet):
-    queryset = PvTechnicalData.objects.all().order_by('timestamp')
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.filter(parameter_id=720)
-       
-        today = datetime.now().date()
-        farm = self.request.query_params.get('farm')
-        queryset = queryset.filter(timestamp__gte=today)
-        queryset = queryset.resample.resample_to_15min()
-        if farm:
-            queryset = queryset.filter(installation_name=farm)    
-        return queryset    
     serializer_class = PvDataSerializer
+    def get_queryset(self):
+        queryset = PvTechnicalData.objects.all()        
+        farm = self.request.query_params.get('farm')        
+        return queryset.resample.resample_to_15min(farm=farm)
 
 
 
