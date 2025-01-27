@@ -47,7 +47,7 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
             final_group.reset_index(inplace=True)
 
             resampled_data.extend(final_group.to_dict(orient='records'))
-
+        print(resampled_data)
         return resampled_data
 
         
