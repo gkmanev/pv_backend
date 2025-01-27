@@ -34,8 +34,12 @@ class SFTPDataProcessor:
                     ppe=self.ppe,
                     defaults={
                         'production': 0,
+                        'temperature_2m': 0,
+                        'uv_index': 0,
+                        'direct_radiation': 0,
                         'latitude': 0,
-                        'longitude': 0,                        
+                        'longitude': 0,
+                        'farm': self.ppe
                     }
                 )
                 current_time += timedelta(minutes=15)
