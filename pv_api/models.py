@@ -110,7 +110,7 @@ class PvTechnicalData(models.Model):
 class PvMeasurementData(models.Model):
     # This model is used to store the actual measurement data    
     timestamp = models.DateTimeField(default=datetime.now)
-    production = models.DecimalField(max_digits=10, decimal_places=3, default=0)
+    production = models.FloatField(null=True, blank=True)
     ppe = models.CharField(max_length=50, default='')  # Assuming PPE values are strings
     farm = models.CharField(max_length=100, default='')
     latitude = models.DecimalField(max_digits=10, decimal_places=4, default=0)
