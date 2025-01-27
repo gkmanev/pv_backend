@@ -33,7 +33,7 @@ class Command(BaseCommand):
                 if ppe is not None:
                     seeking_date = start_date                    
                     processor = SFTPDataProcessor(ppe, seeking_date)
-                    processor.process_data()           
+                    #processor.process_data()           
             start_date = start_date - timedelta(days=1)
         print("Data fetched and stored in the database.")
 
