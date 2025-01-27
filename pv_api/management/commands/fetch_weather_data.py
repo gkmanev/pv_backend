@@ -27,7 +27,7 @@ class Command(BaseCommand):
         except Exception as e:
             print(f"Error loading project mapping file: {e}")
         end = datetime.now().date()
-        start = end - timedelta(days=1)
+        start = end #- timedelta(days=1)
         
 
         while start >= datetime(2025, 1, 20).date():
