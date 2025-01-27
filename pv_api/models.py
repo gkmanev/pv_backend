@@ -42,9 +42,10 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
             # Include non-numeric data (e.g., installation_name) for completeness
             non_numeric_group = group.drop(columns=numeric_columns, errors='ignore').resample('15T').first()
 
-            # Combine numeric and non-numeric results
+            
             final_group = pd.concat([resampled_group, non_numeric_group], axis=1)
             final_group.reset_index(inplace=True)
+            final_group.where(pd.notnull(final_group), None)
 
             resampled_data.extend(final_group.to_dict(orient='records'))
         print(resampled_data)
