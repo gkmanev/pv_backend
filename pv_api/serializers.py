@@ -26,3 +26,10 @@ class ForecastDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForecastDataDayAhead
         fields = '__all__'
+        
+
+class ResampledPvTechnicalDataSerializer(serializers.Serializer):
+    rounded_timestamp = serializers.DateTimeField()
+    parameter_id = serializers.IntegerField()
+    installation_name = serializers.CharField(max_length=255)
+    signal_value = serializers.FloatField()

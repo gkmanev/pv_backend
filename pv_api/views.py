@@ -7,15 +7,14 @@ from django.db.models import Max
 from django.db.models.functions import TruncDate
 from django.db.models import Sum, Avg, F, Q
 from datetime import datetime, timedelta
-from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer, ForecastDataSerializer
+from .serializers import PvDataSerializer, PvMeasurementDataSerializer, AggregatedPvMeasurementDataSerializer, ForecastDataSerializer, ResampledPvTechnicalDataSerializer
 
-class PvDataViewSet(viewsets.ModelViewSet):
-    serializer_class = PvDataSerializer
-    queryset = PvTechnicalData.objects.all() 
-    def get_queryset(self):
-        queryset = super().get_queryset()     
-        farm = self.request.query_params.get('farm')        
-        return PvTechnicalData.resample.resample_to_15min(farm=farm)
+class PvDataViewSet(APIView):
+    def get(self, request, farm):
+        
+        resampled_data = PvTechnicalData.resample.resample_to_15min(farm=farm)
+        serializer = ResampledPvTechnicalDataSerializer(resampled_data, many=True)
+        return Response(serializer.data)
 
 
 
