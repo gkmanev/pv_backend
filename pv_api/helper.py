@@ -34,7 +34,7 @@ class SFTPDataProcessor:
                     timestamp=current_time,
                     ppe=self.ppe,
                     defaults={
-                        'production': 0,
+                        'production': None,
                         'temperature_2m': 0,
                         'uv_index': 0,
                         'direct_radiation': 0,
