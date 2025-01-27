@@ -20,24 +20,28 @@ class SFTPDataProcessor:
         self.password = "Ju3D04dCJs"
         self.ppe = ppe
         self.seeking_date = seeking_date
-        self.create_placeholders_for_tomorrow()
+        self.create_placeholders_for_today_and_tomorrow()
+        
 
-    def create_placeholders_for_tomorrow(self):
-        tomorrow = self.seeking_date + timedelta(days=2)
-        print(tomorrow)
-        queryset = PvMeasurementData.objects.filter(timestamp__date=tomorrow, ppe=self.ppe)
-        if not queryset.exists():
-            print(f"No data found for tomorrow's date {tomorrow}. Creating placeholders...")
-            queryset = PvMeasurementData.objects.filter(timestamp__date=self.seeking_date, ppe=self.ppe)
-            for obj in queryset:
-                print(obj.timestamp)
-        #     for obj in queryset:
-        #         obj.timestamp = obj.timestamp + timedelta(days=1)
-        #         obj.production = 0
-        #         obj.save()
-        #     print("Placeholders created.")
-        # else:
-        #     print(f"Data for tomorrow's date {tomorrow} already exists.")
+    def create_placeholders_for_today_and_tomorrow(self):
+        today = datetime.now().date()
+        tomorrow = today + timedelta(days=1)
+        for date in [today, tomorrow]:
+            current_time = datetime.combine(date, datetime.min.time())
+            while current_time < datetime.combine(date, datetime.max.time()):
+                PvMeasurementData.objects.update_or_create(
+                    timestamp=current_time,
+                    ppe=self.ppe,
+                    defaults={
+                        'production': 0,
+                        'latitude': 0,
+                        'longitude': 0,                        
+                    }
+                )
+                current_time += timedelta(minutes=15)
+
+
+
 
 
     def prepare_file_name(self):

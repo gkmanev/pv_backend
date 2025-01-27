@@ -24,17 +24,14 @@ class Command(BaseCommand):
         except Exception as e:
             print(f"Error loading project mapping file: {e}")
         today = datetime.now().date()
-        start_date = today - timedelta(days=1)
-        end_date = start_date - timedelta(days=4)
-        #end_date = start_date - timedelta(days=1)
-        while start_date >= end_date:
-            for it in project_mapping:
-                ppe = it.get("PPE", None)
-                if ppe is not None:
-                    seeking_date = start_date                    
-                    processor = SFTPDataProcessor(ppe, seeking_date)
-                    #processor.process_data()           
-            start_date = start_date - timedelta(days=1)
+        seeking_date = today - timedelta(days=1)
+          
+        for it in project_mapping:
+            ppe = it.get("PPE", None)
+            if ppe is not None:                                    
+                processor = SFTPDataProcessor(ppe, seeking_date)
+                #processor.process_data()          
+            
         print("Data fetched and stored in the database.")
 
 
