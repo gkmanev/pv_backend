@@ -11,7 +11,7 @@ from .serializers import PvDataSerializer, PvMeasurementDataSerializer, Aggregat
 
 class PvDataViewSet(APIView):
 
-    def get(self, request, args, **kwargs):  
+    def get(self, request, *args, **kwargs):  
         farm = self.request.query_params.get('farm')      
         resampled_data = PvTechnicalData.resample.resample_to_15min(farm=farm)
         serializer = ResampledPvTechnicalDataSerializer(resampled_data, many=True)
