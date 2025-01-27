@@ -44,8 +44,9 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
 
             
             final_group = pd.concat([resampled_group, non_numeric_group], axis=1)
+            final_group.dropna(inplace=True)
             final_group.reset_index(inplace=True)
-            final_group.where(pd.notnull(final_group), None)
+            # final_group.where(pd.notnull(final_group), None)
 
             resampled_data.extend(final_group.to_dict(orient='records'))
         print(resampled_data)
