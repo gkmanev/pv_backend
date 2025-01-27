@@ -36,13 +36,15 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         start_date = self.request.query_params.get('start_date')
         end_date = self.request.query_params.get('end_date')
         ppe = self.request.query_params.get('ppe')
+        today_date = datetime.now().date()
+
 
         if farm:
             queryset = queryset.filter(farm=farm)
         if ppe:
             queryset = queryset.filter(ppe=ppe)
         if day_ahead:
-            queryset = queryset.filter(timestamp__gte=datetime.now() - timedelta(days=2))
+            queryset = queryset.filter(timestamp__gte=today_date - timedelta(days=1))
 
         if aggregate_all:
             queryset = (
