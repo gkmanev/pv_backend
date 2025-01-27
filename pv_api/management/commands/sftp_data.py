@@ -31,7 +31,7 @@ class Command(BaseCommand):
             farm = it.get("farm", None)
             if ppe is not None:                                    
                 processor = SFTPDataProcessor(ppe, farm, seeking_date)
-                #processor.process_data()          
+                processor.process_data()          
             
         print("Data fetched and stored in the database.")
 

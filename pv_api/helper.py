@@ -46,9 +46,6 @@ class SFTPDataProcessor:
                 current_time += timedelta(minutes=15)
 
 
-
-
-
     def prepare_file_name(self):
         file_date_to_str = self.seeking_date.strftime("%Y%m%d")
         return f"ENED_{self.ppe}_LN01_COP_{file_date_to_str}.dat"
