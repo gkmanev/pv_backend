@@ -12,6 +12,7 @@ def fetch_and_store_pv_data():
     
     for item in data:
         signal_time = datetime.strptime(item['signal_time'], "%Y-%m-%d %H:%M:%S")
+        print(f"Resceived:{item['installation_name']}|| {item['signal_value']} ")
         for i in range(5):
             minute_signal_time = signal_time - timedelta(minutes=i)
             
