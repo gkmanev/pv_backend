@@ -15,7 +15,7 @@ class PvDataViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()     
         farm = self.request.query_params.get('farm')        
-        return queryset.resample.resample_to_15min(farm=farm)
+        return PvTechnicalData.resample.resample_to_15min(farm=farm)
 
 
 
