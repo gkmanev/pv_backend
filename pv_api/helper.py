@@ -129,7 +129,6 @@ class WeatherDataProcessor:
         self.longitude = longitude
         self.start_date = start_date
         self.end_date = end_date
-        print(f"End Date: {end_date}")
     
     def fetch_and_store_weather_data(self):
         params = {
