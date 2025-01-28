@@ -146,7 +146,7 @@ class WeatherDataProcessor:
         self.retry_session = retry(self.cache_session, retries = 5, backoff_factor = 0.2)
         self.openmeteo = openmeteo_requests.Client(session = self.retry_session)
         self.weather_list = []
-        self.url = "https://historical-forecast-api.open-meteo.com/v1/forecast"
+        self.url = "https://archive-api.open-meteo.com/v1/archive"
         self.ppe = ppe
         self.latitude = latitude
         self.longitude = longitude
@@ -160,13 +160,13 @@ class WeatherDataProcessor:
 		    "longitude": self.longitude,
 		    "start_date": self.start_date,
 		    "end_date": self.end_date,
-		    "hourly": ["temperature_2m", "uv_index", "direct_radiation"]
+		    "hourly": ["temperature_2m", "direct_radiation"]
 	    }
         responses = self.openmeteo.weather_api(self.url, params=params)
         response = responses[0]
         hourly = response.Hourly()
         hourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()
-        hourly_uv_index = hourly.Variables(1).ValuesAsNumpy()
+        #hourly_uv_index = hourly.Variables(1).ValuesAsNumpy()
         hourly_direct_radiation = hourly.Variables(2).ValuesAsNumpy()
         hourly_data = {"date": pd.date_range(
             start = pd.to_datetime(hourly.Time(), unit = "s", utc = True),
@@ -175,7 +175,7 @@ class WeatherDataProcessor:
             inclusive = "left"
 	    )}
         hourly_data["temperature_2m"] = hourly_temperature_2m
-        hourly_data["uv_index"] = hourly_uv_index
+        #hourly_data["uv_index"] = hourly_uv_index
         hourly_data["direct_radiation"] = hourly_direct_radiation
 
         hourly_dataframe = pd.DataFrame(data = hourly_data)
@@ -189,14 +189,14 @@ class WeatherDataProcessor:
             timestamp_start = row['date']
             timestamp_end = timestamp_start + timedelta(hours=1)
             temperature_2m = round(row['temperature_2m'], 2)
-            uv_index = round(row['uv_index'], 2)
+            #uv_index = round(row['uv_index'], 2)
             direct_radiation = round(row['direct_radiation'],2)            
             queryset = PvMeasurementData.objects.filter(timestamp__range=[timestamp_start, timestamp_end], ppe=self.ppe)
             
             if queryset.exists():
                 for obj in queryset:
                     obj.temperature_2m = temperature_2m
-                    obj.uv_index = uv_index
+                    #obj.uv_index = uv_index
                     obj.direct_radiation = direct_radiation
                     obj.latitude = self.latitude
                     obj.longitude = self.longitude
@@ -205,7 +205,7 @@ class WeatherDataProcessor:
                 print(f"No data found for timestamp {timestamp_start}")
 
         try:
-            PvMeasurementData.objects.bulk_update(obj_to_update, ['temperature_2m', 'uv_index', 'direct_radiation'])
+            PvMeasurementData.objects.bulk_update(obj_to_update, ['temperature_2m', 'direct_radiation'])
         except Exception as e:
             print(f"Error updating weather data fields: {e}")
 
