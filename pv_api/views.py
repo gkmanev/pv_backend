@@ -18,18 +18,17 @@ class PvDataViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         
         # Filter data based on query parameters
-        today = datetime.now().date()
-        farm = self.request.query_params.get('farm')
-        queryset = queryset.filter(timestamp__gte=today)  # Filter by today's data
-        if farm:
-            queryset = queryset.filter(installation_name=farm)  # Filter by farm name
+        today = datetime.now().date()        
+        queryset = queryset.filter(timestamp__gte=today)         
         
         return queryset
 
     def list(self, request, *args, **kwargs):
-        # Call the filtered queryset and pass it to the manager for resampling
+        farm = self.request.query_params.get('farm')      
         queryset = self.get_queryset()
-        resampled_data = PvTechnicalData.resample.resample_to_15min(queryset)
+        if farm:
+            queryset = queryset.filter(installation_name=farm)  
+        resampled_data = PvTechnicalData.resample.resample_to_15min(farm, queryset)
 
         # Return the resampled data as a response
         return Response(resampled_data, status=status.HTTP_200_OK)    
