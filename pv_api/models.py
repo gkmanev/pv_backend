@@ -28,17 +28,9 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
         # add the installation name as farm column
         df['farm'] = farm
 
-        # Convert the DataFrame back to a list of dictionaries
-        print(df)
+        # Convert the DataFrame back to a list of dictionaries        
         return df.to_dict(orient='records')
 
-       
-
-        
-        
-
-
-        
        
 class ConfidanceManager(models.Manager):
         
