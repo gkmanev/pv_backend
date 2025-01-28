@@ -11,12 +11,14 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
         return super().get_queryset()
 
     def resample_to_15min(self, queryset=None):
+        
         if queryset is None:
             queryset = self.get_queryset()  # Default to all data if no queryset provided
 
         # Convert the data to a pandas DataFrame
-        data = queryset.values('timestamp', 'signal_value')
+        data = queryset.values('timestamp', 'signal_value', 'installation_name')
         df = pd.DataFrame(list(data))
+        print(df)
         if df.empty:
             return []  # Handle the case where no data is returned
 
@@ -25,7 +27,7 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
 
         # Resample the data to 15 minutes
         resampled_data = df
-        print(resampled_data)
+       
 
         
         
