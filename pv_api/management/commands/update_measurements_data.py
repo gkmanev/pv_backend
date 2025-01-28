@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from decimal import Decimal, InvalidOperation
+import roman
 from django.utils.dateparse import parse_datetime
 from django.core.management.base import BaseCommand
 from django.db import transaction
@@ -36,12 +37,14 @@ class Command(BaseCommand):
                 try:
                     # Check if record already exists
                     if (parse_datetime(row.Timestamp), row.PPE) not in existing_records:
+                        # Replace any number in row.farm with its Roman numeral equivalent
+                        farm = ''.join([str(roman.toRoman(int(char))) if char.isdigit() else char for char in row.farm])
                         records.append(
                             PvMeasurementData(
                                 timestamp=parse_datetime(row.Timestamp),
                                 production=self.to_decimal(row.Production),
                                 ppe=row.PPE,
-                                farm=row.farm,
+                                farm=farm,
                                 latitude=self.to_decimal(row.latitude),
                                 longitude=self.to_decimal(row.longitude),
                                 temperature_2m=self.to_decimal(row.temperature_2m),
