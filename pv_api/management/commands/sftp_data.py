@@ -23,10 +23,9 @@ class Command(BaseCommand):
                 print(f"Project mapping file not found: {project_mapping_path}")
         except Exception as e:
             print(f"Error loading project mapping file: {e}")
-        #today = datetime.now().date()
-        today = datetime(2025, 1, 1).date()
+        today = datetime.now().date()       
         seeking_date = today - timedelta(days=1)
-        while seeking_date > datetime(2024, 9, 1).date():            
+        while seeking_date > datetime(2025, 1, 1).date():            
             for it in project_mapping:
                     ppe = it.get("PPE", None)
                     farm = it.get("farm", None)
