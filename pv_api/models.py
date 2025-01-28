@@ -15,41 +15,21 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
             queryset = self.get_queryset()  # Default to all data if no queryset provided
 
         # Convert the data to a pandas DataFrame
-        data = queryset.values('timestamp', 'parameter_id', 'signal_value', 'installation_name')
+        data = queryset.values('timestamp', 'signal_value')
         df = pd.DataFrame(list(data))
         if df.empty:
             return []  # Handle the case where no data is returned
 
-        # Ensure 'timestamp' is datetime and set it as the index
         df['timestamp'] = pd.to_datetime(df['timestamp'])
         df.set_index('timestamp', inplace=True)
 
-        # Separate numeric columns for aggregation
-        numeric_columns = df.select_dtypes(include=['number']).columns
-        if numeric_columns.empty:
-            return []  # Return empty list if no numeric data exists
-
-        # Group by parameter_id and resample based on logic
-        resampled_data = []
-        for param_id, group in df.groupby('parameter_id'):
-            # Only use numeric columns for resampling
-            numeric_group = group[numeric_columns]
-            if param_id == 720:
-                resampled_group = numeric_group.resample('15T').sum()
-            else:
-                resampled_group = numeric_group.resample('15T').mean()
-
-            # Include non-numeric data (e.g., installation_name) for completeness
-            non_numeric_group = group.drop(columns=numeric_columns, errors='ignore').resample('15T').first()
-
-            
-            final_group = pd.concat([resampled_group, non_numeric_group], axis=1)
-            final_group.dropna(inplace=True)
-            final_group.reset_index(inplace=True)
-            # final_group.where(pd.notnull(final_group), None)
-
-            resampled_data.extend(final_group.to_dict(orient='records'))
+        # Resample the data to 15 minutes
+        resampled_data = df.resample('15T').sum().reset_index()
         print(resampled_data)
+
+        
+        
+
         return resampled_data
 
         
