@@ -167,20 +167,26 @@ class WeatherDataProcessor:
         hourly = response.Hourly()
         hourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()
         #hourly_uv_index = hourly.Variables(1).ValuesAsNumpy()
-        hourly_direct_radiation = hourly.Variables(2).ValuesAsNumpy()
+        hourly_direct_radiation = hourly.Variables(1).ValuesAsNumpy()
         hourly_data = {"date": pd.date_range(
             start = pd.to_datetime(hourly.Time(), unit = "s", utc = True),
             end = pd.to_datetime(hourly.TimeEnd(), unit = "s", utc = True),
             freq = pd.Timedelta(seconds = hourly.Interval()),
             inclusive = "left"
 	    )}
-        hourly_data["temperature_2m"] = hourly_temperature_2m
-        #hourly_data["uv_index"] = hourly_uv_index
-        hourly_data["direct_radiation"] = hourly_direct_radiation
-
-        hourly_dataframe = pd.DataFrame(data = hourly_data)
+        # Check if hourly_temperature_2m is not empty
+        if pd.isna(hourly_temperature_2m).all() or pd.isna(hourly_direct_radiation).all():
+            print("No temperature and radiation data found")
+        else:
+            hourly_data["temperature_2m"] = hourly_temperature_2m       
+            hourly_data["direct_radiation"] = hourly_direct_radiation
+            hourly_dataframe = pd.DataFrame(data = hourly_data) 
+            # remove if nans into hourly_dataframe
+            hourly_dataframe = hourly_dataframe.dropna()   
+            
+            self.update_data_weather_fields(hourly_dataframe)          
         
-        self.update_data_weather_fields(hourly_dataframe)
+        
     
     def update_data_weather_fields(self, hourly_dataframe):
         
