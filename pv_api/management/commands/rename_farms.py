@@ -30,7 +30,7 @@ class Command(BaseCommand):
                     data_point.farm = it['farm']                    
                     update_data.append(data_point)
 
-        PvMeasurementData.objects.bulk_update(update_data, ['farm'], batch_size=1000)
+        PvMeasurementData.objects.bulk_create(update_data, batch_size=1000)
         print(f"{len(update_data)} data points updated.")
 
             

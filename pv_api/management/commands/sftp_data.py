@@ -25,14 +25,14 @@ class Command(BaseCommand):
             print(f"Error loading project mapping file: {e}")
         today = datetime.now().date()
         seeking_date = today - timedelta(days=1)
-        #while seeking_date > datetime(2025, 1, 1).date():            
-        for it in project_mapping:
-                ppe = it.get("PPE", None)
-                farm = it.get("farm", None)
-                if ppe is not None:                                    
-                    processor = SFTPDataProcessor(ppe, farm, seeking_date)
-                    processor.process_data()          
-            #seeking_date -= timedelta(days=1)
+        while seeking_date > datetime(2025, 1, 1).date():            
+            for it in project_mapping:
+                    ppe = it.get("PPE", None)
+                    farm = it.get("farm", None)
+                    if ppe is not None:                                    
+                        processor = SFTPDataProcessor(ppe, farm, seeking_date)
+                        processor.process_data()          
+            seeking_date -= timedelta(days=1)
         print("Data fetched and stored in the database.")
 
 
