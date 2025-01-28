@@ -24,7 +24,7 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
         df.set_index('timestamp', inplace=True)
 
         # Resample the data to 15 minutes
-        resampled_data = df.resample('15T').sum().reset_index()
+        resampled_data = df
         print(resampled_data)
 
         
