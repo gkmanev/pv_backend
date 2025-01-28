@@ -11,7 +11,7 @@ from .serializers import PvDataSerializer, PvMeasurementDataSerializer, Aggregat
 
 
 class PvDataViewSet(viewsets.ModelViewSet):
-    queryset = PvTechnicalData.objects.all().order_by('timestamp')
+    queryset = PvTechnicalData.objects.filter(parameter_id=720).order_by('timestamp')
     serializer_class = PvDataSerializer
 
     def get_queryset(self):
