@@ -146,7 +146,7 @@ class WeatherDataProcessor:
         self.retry_session = retry(self.cache_session, retries = 5, backoff_factor = 0.2)
         self.openmeteo = openmeteo_requests.Client(session = self.retry_session)
         self.weather_list = []
-        self.url = "https://archive-api.open-meteo.com/v1/archive"
+        self.url = "https://historical-forecast-api.open-meteo.com/v1/forecast"
         self.ppe = ppe
         self.latitude = latitude
         self.longitude = longitude

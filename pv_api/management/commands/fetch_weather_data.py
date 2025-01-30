@@ -28,7 +28,7 @@ class Command(BaseCommand):
             print(f"Error loading project mapping file: {e}")
         start = datetime.now().date() 
         #end = start + timedelta(days=1) 
-        while start > datetime(2025, 1, 25).date():       
+        while start > datetime(2025, 1, 1).date():       
             for it in project_mapping:
                 ppe = it.get("PPE", None)
                 lat = it.get("latitude", None)
@@ -37,8 +37,9 @@ class Command(BaseCommand):
                     start_date = start 
                     end_date = start
                     weather_data = WeatherDataProcessor(start_date, end_date, lat, lon, ppe)
-                    weather_data.fetch_and_store_weather_data()      
-            start -= timedelta(days=1)               
+                    weather_data.fetch_and_store_weather_data()  
+            start -= timedelta(days=1)    
+                         
             
         print("Data fetched and stored in the database.")
 
