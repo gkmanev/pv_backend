@@ -141,7 +141,7 @@ class SFTPDataProcessor:
 
         
 class WeatherDataProcessor:
-    def __init__(self, start_date, end_date, latitude, longitude, ppe):
+    def __init__(self, start_date, end_date, latitude, longitude, ppe, is_day_ahead_forecast = False):
         self.cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
         self.retry_session = retry(self.cache_session, retries = 5, backoff_factor = 0.2)
         self.openmeteo = openmeteo_requests.Client(session = self.retry_session)
@@ -152,7 +152,8 @@ class WeatherDataProcessor:
         self.longitude = longitude
         self.start_date = start_date
         self.end_date = end_date
-        
+        self.is_day_ahead_forecast = is_day_ahead_forecast
+                
     
     def fetch_and_store_weather_data(self):
         params = {
@@ -162,6 +163,15 @@ class WeatherDataProcessor:
 		    "end_date": self.end_date,
 		    "hourly": ["temperature_2m", "direct_radiation"]
 	    }
+        if self.is_day_ahead_forecast:
+            params = {
+                "latitude": self.latitude,
+                "longitude": self.longitude,
+                "hourly": ["temperature_2m", "direct_radiation"],
+	            "forecast_days": 2
+            }
+            self.url = "https://api.open-meteo.com/v1/forecast"
+          
         responses = self.openmeteo.weather_api(self.url, params=params)
         response = responses[0]
         hourly = response.Hourly()
@@ -174,6 +184,7 @@ class WeatherDataProcessor:
             freq = pd.Timedelta(seconds = hourly.Interval()),
             inclusive = "left"
 	    )}
+        
         # Check if hourly_temperature_2m is not empty
         if pd.isna(hourly_temperature_2m).all() or pd.isna(hourly_direct_radiation).all():
             print("No temperature and radiation data found")
@@ -182,7 +193,8 @@ class WeatherDataProcessor:
             hourly_data["direct_radiation"] = hourly_direct_radiation
             hourly_dataframe = pd.DataFrame(data = hourly_data) 
             # remove if nans into hourly_dataframe
-            hourly_dataframe = hourly_dataframe.dropna()   
+            hourly_dataframe = hourly_dataframe.dropna()  
+            
             
             self.update_data_weather_fields(hourly_dataframe)          
         
