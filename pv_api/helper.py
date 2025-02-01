@@ -141,7 +141,7 @@ class SFTPDataProcessor:
 
         
 class WeatherDataProcessor:
-    def __init__(self, start_date, end_date, latitude, longitude, ppe, is_day_ahead_forecast = False):
+    def __init__(self, start_date, end_date, latitude, longitude, ppe, is_day_ahead_forecast = False, is_collect_history = False):
         self.cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
         self.retry_session = retry(self.cache_session, retries = 5, backoff_factor = 0.2)
         self.openmeteo = openmeteo_requests.Client(session = self.retry_session)
@@ -153,6 +153,7 @@ class WeatherDataProcessor:
         self.start_date = start_date
         self.end_date = end_date
         self.is_day_ahead_forecast = is_day_ahead_forecast
+        self.collect_history = is_collect_history
                 
     
     def fetch_and_store_weather_data(self):
@@ -163,7 +164,10 @@ class WeatherDataProcessor:
 		    "end_date": self.end_date,
 		    "hourly": ["temperature_2m", "direct_radiation"]
 	    }
-        if self.is_day_ahead_forecast:
+        if self.collect_history:
+            self.url = "https://archive-api.open-meteo.com/v1/archive"
+
+        elif self.is_day_ahead_forecast:
             params = {
                 "latitude": self.latitude,
                 "longitude": self.longitude,
@@ -171,6 +175,8 @@ class WeatherDataProcessor:
 	            "forecast_days": 2
             }
             self.url = "https://api.open-meteo.com/v1/forecast"
+        
+        
           
         responses = self.openmeteo.weather_api(self.url, params=params)
         response = responses[0]

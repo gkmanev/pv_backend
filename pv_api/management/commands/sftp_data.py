@@ -25,7 +25,7 @@ class Command(BaseCommand):
             print(f"Error loading project mapping file: {e}")
         today = datetime.now().date()       
         seeking_date = today - timedelta(days=1)
-        while seeking_date > datetime(2025, 1, 26).date():            
+        while seeking_date > datetime(2025, 1, 28).date():            
             for it in project_mapping:
                     ppe = it.get("PPE", None)
                     farm = it.get("farm", None)
