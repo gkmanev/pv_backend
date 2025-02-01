@@ -37,7 +37,7 @@ class Command(BaseCommand):
                     start_date = start 
                     end_date = start
                     # is_day_ahead_forecast = False and is_collect_history = False
-                    weather_data = WeatherDataProcessor(start_date, end_date, lat, lon, ppe, is_collect_history=True)
+                    weather_data = WeatherDataProcessor(start_date, end_date, lat, lon, ppe, is_day_ahead_forecast=True)
                     weather_data.fetch_and_store_weather_data()                      
             start -= timedelta(days=1)    
                          

@@ -172,6 +172,7 @@ class WeatherDataProcessor:
                 "latitude": self.latitude,
                 "longitude": self.longitude,
                 "hourly": ["temperature_2m", "direct_radiation"],
+                "past_days": 2,
 	            "forecast_days": 2
             }
             self.url = "https://api.open-meteo.com/v1/forecast"
