@@ -220,11 +220,13 @@ class WeatherDataProcessor:
             if queryset.exists():
                 for obj in queryset:
                     obj.temperature_2m = temperature_2m
-                    #obj.uv_index = uv_index
-                    if self.collect_history == True:
+                    #obj.uv_index = uv_index                    
+                    if self.collect_history:
                         obj.direct_radiation = direct_radiation
                     else:
-                        obj.direct_radiation_forecast = direct_radiation
+                        print(f"Direct radiation: {direct_radiation}")                        
+                        obj.direct_radiation_forecast = direct_radiation                    
+                    
                     obj.latitude = self.latitude
                     obj.longitude = self.longitude
                     obj_to_update.append(obj)        
