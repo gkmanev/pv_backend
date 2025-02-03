@@ -200,8 +200,7 @@ class WeatherDataProcessor:
             hourly_data["direct_radiation"] = hourly_direct_radiation
             hourly_dataframe = pd.DataFrame(data = hourly_data) 
             # remove if nans into hourly_dataframe
-            hourly_dataframe = hourly_dataframe.dropna()  
-            
+            hourly_dataframe = hourly_dataframe.dropna()              
             
             self.update_data_weather_fields(hourly_dataframe)          
         
@@ -222,7 +221,10 @@ class WeatherDataProcessor:
                 for obj in queryset:
                     obj.temperature_2m = temperature_2m
                     #obj.uv_index = uv_index
-                    obj.direct_radiation = direct_radiation
+                    if self.collect_history == True:
+                        obj.direct_radiation = direct_radiation
+                    else:
+                        obj.direct_radiation_forecast = direct_radiation
                     obj.latitude = self.latitude
                     obj.longitude = self.longitude
                     obj_to_update.append(obj)        
