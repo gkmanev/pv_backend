@@ -223,8 +223,7 @@ class WeatherDataProcessor:
                     #obj.uv_index = uv_index                    
                     if self.collect_history:
                         obj.direct_radiation = direct_radiation
-                    else:
-                        print(f"Direct radiation: {direct_radiation}")                        
+                    else:                        
                         obj.direct_radiation_forecast = direct_radiation
                     
                     obj.latitude = self.latitude
@@ -232,10 +231,11 @@ class WeatherDataProcessor:
                     obj_to_update.append(obj)        
             else:
                 print(f"No data found for timestamp {timestamp_start}")
-        for it in obj_to_update:
-            print(f"Object to update: {it.direct_radiation}")
         try:
-            PvMeasurementData.objects.bulk_update(obj_to_update, ['temperature_2m', 'direct_radiation'])
+            if self.collect_history:
+                PvMeasurementData.objects.bulk_update(obj_to_update, ['temperature_2m', 'direct_radiation'])
+            else:
+                PvMeasurementData.objects.bulk_update(obj_to_update, ['temperature_2m', 'direct_radiation_forecast'])
         except Exception as e:
             print(f"Error updating weather data fields: {e}")
 
