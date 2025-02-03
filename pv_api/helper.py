@@ -232,7 +232,8 @@ class WeatherDataProcessor:
                     obj_to_update.append(obj)        
             else:
                 print(f"No data found for timestamp {timestamp_start}")
-        print(f"obj_to_update: {obj_to_update}")
+        for it in obj_to_update:
+            print(f"Object to update: {it.direct_radiation}")
         try:
             PvMeasurementData.objects.bulk_update(obj_to_update, ['temperature_2m', 'direct_radiation'])
         except Exception as e:
