@@ -19,7 +19,7 @@ class PvDataViewSet(viewsets.ModelViewSet):
         
         # Filter data based on query parameters
         today = datetime.now().date()        
-        queryset = queryset.filter(timestamp__gte=today)         
+        queryset = queryset.filter(timestamp__gte=today-timedelta(days=7))         
         
         return queryset
 
