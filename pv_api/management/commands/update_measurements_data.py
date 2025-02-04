@@ -39,10 +39,11 @@ class Command(BaseCommand):
                     if (parse_datetime(row.Timestamp), row.PPE) not in existing_records:
                         # Replace any number in row.farm with its Roman numeral equivalent
                         farm = ''.join([str(roman.toRoman(int(char))) if char.isdigit() else char for char in row.farm])
+                        production=self.to_decimal(row.Production)
                         records.append(
                             PvMeasurementData(
                                 timestamp=parse_datetime(row.Timestamp),
-                                production=self.to_decimal(row.Production),
+                                production=production*1000,
                                 ppe=row.PPE,
                                 farm=farm,
                                 latitude=self.to_decimal(row.latitude),
