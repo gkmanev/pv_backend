@@ -150,6 +150,8 @@ class PvMeasurementData(models.Model):
     direct_radiation_forecast = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     min_production = models.DecimalField(max_digits=10, decimal_places=3, default=0)
     max_production = models.DecimalField(max_digits=10, decimal_places=3, default=0)
+    global_tilted_irradiance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    global_tilted_irradiance_forecast = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     objects = models.Manager()
     confidance = ConfidanceManager()
     
