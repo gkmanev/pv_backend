@@ -222,8 +222,7 @@ class WeatherDataProcessor:
                 for obj in queryset:
                     #obj.temperature_2m = temperature_2m
                     #obj.uv_index = uv_index                    
-                    if self.collect_history:
-                        print(global_tilted_irradiance)
+                    if self.collect_history:                        
                         obj.global_tilted_irradiance = global_tilted_irradiance
                     else:                        
                         obj.global_tilted_irradiance_forecast = global_tilted_irradiance
