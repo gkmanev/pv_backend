@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         
-        project_mapping_path = os.path.join(settings.BASE_DIR, 'projects_mapping.json')
+        project_mapping_path = os.path.join(settings.BASE_DIR, 'oborniki1.json')
         project_mapping = []
         try:
             if os.path.exists(project_mapping_path):
@@ -26,9 +26,10 @@ class Command(BaseCommand):
                 print(f"Project mapping file not found: {project_mapping_path}")
         except Exception as e:
             print(f"Error loading project mapping file: {e}")
-        start = datetime.now().date() 
+        #start = datetime.now().date() 
         #end = start + timedelta(days=1) 
-        while start > datetime(2024, 8, 1).date():       
+        start = datetime(2024, 10, 1).date()
+        while start > datetime(2024, 7, 1).date():       
             for it in project_mapping:
                 ppe = it.get("PPE", None)
                 lat = it.get("latitude", None)
