@@ -28,8 +28,8 @@ class Command(BaseCommand):
             print(f"Error loading project mapping file: {e}")
         #start = datetime.now().date() 
         #end = start + timedelta(days=1) 
-        start = datetime(2024, 10, 1).date()
-        while start > datetime(2024, 7, 1).date():       
+        start = datetime(2024, 7, 2).date()
+        while start > datetime(2024, 2, 1).date():       
             for it in project_mapping:
                 ppe = it.get("PPE", None)
                 lat = it.get("latitude", None)
