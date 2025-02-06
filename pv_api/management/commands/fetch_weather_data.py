@@ -29,7 +29,7 @@ class Command(BaseCommand):
         start = datetime.now().date() 
         #end = start + timedelta(days=1) 
         #start = datetime(2025, 1, 2).date()
-        while start > datetime(2025, 2, 1).date():       
+        while start > datetime(2025, 2, 4).date():       
             for it in project_mapping:
                 ppe = it.get("PPE", None)
                 lat = it.get("latitude", None)

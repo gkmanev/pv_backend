@@ -223,6 +223,7 @@ class WeatherDataProcessor:
                     #obj.uv_index = uv_index                    
                     if self.collect_history:
                         obj.direct_radiation = direct_radiation
+                        print(f"{timestamp_start} || {direct_radiation}")
                     else:                                       
                         obj.direct_radiation_forecast = direct_radiation                    
                     obj.latitude = self.latitude
