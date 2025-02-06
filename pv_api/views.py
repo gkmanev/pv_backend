@@ -51,9 +51,10 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         ytd = self.request.query_params.get('ytd')
         y_minus_1 = self.request.query_params.get('y-1')
         y_minus_2 = self.request.query_params.get('y-2')
-        today_date = datetime.now().date()
+        seven_days = self.request.query_params.get('7d')
 
-        print(f"params: {self.request.query_params}")
+        today_date = datetime.now().date()
+        
         
         if farm:
             queryset = queryset.filter(farm=farm)
@@ -66,13 +67,17 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
             # Get data from the begining of the current year
             queryset = queryset.filter(timestamp__gte=today_date.replace(month=1, day=1))
             first_timestamp = queryset.first().timestamp
-            print("First timestamp:", first_timestamp)    
+               
         if y_minus_1:
             # Get data from the begining of the previous year till the begining of the current year
             queryset = queryset.filter(timestamp__range=[today_date.replace(year=today_date.year-1, month=1, day=1), today_date.replace(month=1, day=1)])
         if y_minus_2:
             # Get data from the begining of the year before the previous year till the begining of the previous year
             queryset = queryset.filter(timestamp__range=[today_date.replace(year=today_date.year-2, month=1, day=1), today_date.replace(year=today_date.year-1, month=1, day=1)])
+        
+        if seven_days:
+            start = today_date - timedelta(days=5)
+            queryset = queryset.filter(timestamp__gte=start)
             
         if aggregate_all:
             queryset = (
