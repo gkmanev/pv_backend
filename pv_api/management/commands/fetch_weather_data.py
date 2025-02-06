@@ -29,7 +29,7 @@ class Command(BaseCommand):
         start = datetime.now().date() 
         #end = start + timedelta(days=1) 
         #start = datetime(2025, 1, 2).date()
-        while start > datetime(2025, 1, 28).date():       
+        while start > datetime(2025, 1, 1).date():       
             for it in project_mapping:
                 ppe = it.get("PPE", None)
                 lat = it.get("latitude", None)
@@ -38,7 +38,7 @@ class Command(BaseCommand):
                     start_date = start 
                     end_date = start
                     # is_day_ahead_forecast = False and is_collect_history = False
-                    weather_data = WeatherDataProcessor(start_date, end_date, lat, lon, ppe, is_collect_history = True, is_day_ahead_forecast=False)
+                    weather_data = WeatherDataProcessor(start_date, end_date, lat, lon, ppe, is_collect_history = False, is_day_ahead_forecast=False)
                     weather_data.fetch_and_store_weather_data()
             start -= timedelta(days=1)                         
             
