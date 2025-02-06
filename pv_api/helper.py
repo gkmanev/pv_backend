@@ -162,8 +162,7 @@ class WeatherDataProcessor:
 		    "longitude": self.longitude,
 		    "start_date": self.start_date,
 		    "end_date": self.end_date,
-            "hourly": "global_tilted_irradiance",
-		    "tilt": 25
+		    "hourly": ["temperature_2m", "direct_radiation"]
 	    }
         if self.collect_history:
             self.url = "https://archive-api.open-meteo.com/v1/archive"
@@ -183,9 +182,9 @@ class WeatherDataProcessor:
         responses = self.openmeteo.weather_api(self.url, params=params)
         response = responses[0]
         hourly = response.Hourly()
-        global_tilted_irradiance = hourly.Variables(0).ValuesAsNumpy()
+        hourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()
         #hourly_uv_index = hourly.Variables(1).ValuesAsNumpy()
-        #hourly_direct_radiation = hourly.Variables(1).ValuesAsNumpy()
+        hourly_direct_radiation = hourly.Variables(1).ValuesAsNumpy()
         hourly_data = {"date": pd.date_range(
             start = pd.to_datetime(hourly.Time(), unit = "s", utc = True),
             end = pd.to_datetime(hourly.TimeEnd(), unit = "s", utc = True),
@@ -194,11 +193,11 @@ class WeatherDataProcessor:
 	    )}
         
         # Check if hourly_temperature_2m is not empty
-        if pd.isna(global_tilted_irradiance).all():
-            print("No Global Tilted Irradiance found")
+        if pd.isna(hourly_temperature_2m).all() or pd.isna(hourly_direct_radiation).all():
+            print("No temperature and radiation data found")
         else:
-            hourly_data["global_tilted_irradiance"] = global_tilted_irradiance       
-            # hourly_data["direct_radiation"] = hourly_direct_radiation
+            hourly_data["temperature_2m"] = hourly_temperature_2m       
+            hourly_data["direct_radiation"] = hourly_direct_radiation
             hourly_dataframe = pd.DataFrame(data = hourly_data) 
             # remove if nans into hourly_dataframe
             hourly_dataframe = hourly_dataframe.dropna()              
@@ -213,20 +212,19 @@ class WeatherDataProcessor:
         for index, row in hourly_dataframe.iterrows():
             timestamp_start = row['date']
             timestamp_end = timestamp_start + timedelta(hours=1)
-            #temperature_2m = round(row['temperature_2m'], 2)
+            temperature_2m = round(row['temperature_2m'], 2)
             #uv_index = round(row['uv_index'], 2)
-            global_tilted_irradiance = round(row['global_tilted_irradiance'],2)            
+            direct_radiation = round(row['direct_radiation'],2)            
             queryset = PvMeasurementData.objects.filter(timestamp__range=[timestamp_start, timestamp_end], ppe=self.ppe)
             
             if queryset.exists():
                 for obj in queryset:
-                    #obj.temperature_2m = temperature_2m
+                    obj.temperature_2m = temperature_2m
                     #obj.uv_index = uv_index                    
-                    if self.collect_history:                        
-                        obj.global_tilted_irradiance = global_tilted_irradiance
-                    else:                        
-                        obj.global_tilted_irradiance_forecast = global_tilted_irradiance
-                    
+                    if self.collect_history:
+                        obj.direct_radiation = direct_radiation
+                    else:                                       
+                        obj.direct_radiation_forecast = direct_radiation                    
                     obj.latitude = self.latitude
                     obj.longitude = self.longitude
                     obj_to_update.append(obj)        
@@ -234,9 +232,9 @@ class WeatherDataProcessor:
                 print(f"No data found for timestamp {timestamp_start}")
         try:
             if self.collect_history:
-                PvMeasurementData.objects.bulk_update(obj_to_update, ['global_tilted_irradiance'])
+                PvMeasurementData.objects.bulk_update(obj_to_update, ['temperature_2m', 'direct_radiation'])
             else:
-                PvMeasurementData.objects.bulk_update(obj_to_update, ['global_tilted_irradiance_forecast'])
+                PvMeasurementData.objects.bulk_update(obj_to_update, ['temperature_2m', 'direct_radiation_forecast'])
         except Exception as e:
             print(f"Error updating weather data fields: {e}")
 
