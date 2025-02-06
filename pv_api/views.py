@@ -62,6 +62,8 @@ class PvMeasurementDataViewSet(viewsets.ReadOnlyModelViewSet):
         if ytd:
             # Get data from the begining of the current year
             queryset = queryset.filter(timestamp__gte=today_date.replace(month=1, day=1))
+            first_timestamp = queryset.first().timestamp
+            print("First timestamp:", first_timestamp)    
         if y_minus_1:
             # Get data from the begining of the previous year till the begining of the current year
             queryset = queryset.filter(timestamp__range=[today_date.replace(year=today_date.year-1, month=1, day=1), today_date.replace(month=1, day=1)])
