@@ -29,18 +29,19 @@ class Command(BaseCommand):
         start = datetime.now().date() 
         #end = start + timedelta(days=1) 
         #start = datetime(2025, 1, 2).date()
-        #while start > datetime(2025, 1, 1).date():       
-        for it in project_mapping:
-            ppe = it.get("PPE", None)
-            lat = it.get("latitude", None)
-            lon = it.get("longitude", None)
-            if ppe is not None and lat is not None and lon is not None: 
-                start_date = start - timedelta(days=2)
-                end_date = start
-                # is_day_ahead_forecast = False and is_collect_history = False
-                weather_data = WeatherDataProcessor(start_date, end_date, lat, lon, ppe, is_collect_history = True, is_day_ahead_forecast=False)
-                weather_data.fetch_and_store_weather_data()
-        #start -= timedelta(days=1)                         
+        period = start - timedelta(days=3)
+        while start > period:      
+            for it in project_mapping:
+                ppe = it.get("PPE", None)
+                lat = it.get("latitude", None)
+                lon = it.get("longitude", None)
+                if ppe is not None and lat is not None and lon is not None: 
+                    start_date = start 
+                    end_date = start
+                    # is_day_ahead_forecast = False and is_collect_history = False
+                    weather_data = WeatherDataProcessor(start_date, end_date, lat, lon, ppe, is_collect_history = True, is_day_ahead_forecast=False)
+                    weather_data.fetch_and_store_weather_data()
+            start -= timedelta(days=1)                         
             
         print("Data fetched and stored in the database.")
 
