@@ -53,15 +53,15 @@ CELERY_BEAT_SCHEDULE = {
     },
     'define_task_fetch_and_store_sftp_data': {
         'task': 'pv_api.tasks.task_fetch_and_store_sftp_data',
-        'schedule': crontab(hour=11, minute=54),
+        'schedule': crontab(hour=10, minute=30),
     },
     'define_task_fetch_and_store_weather_data_forecast': {
         'task': 'pv_api.tasks.task_fetch_and_store_weather_data_forecast',
-        'schedule': crontab(hour=12, minute=2),
+        'schedule': crontab(hour=10, minute=40),
     },
     'define_task_fetch_and_store_weather_data_historical': {
         'task': 'pv_api.tasks.task_fetch_and_store_weather_data_historical',
-        'schedule': crontab(hour=12, minute=6),
+        'schedule': crontab(hour=10, minute=45),
     },
 }
 
