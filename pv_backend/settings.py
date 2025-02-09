@@ -42,16 +42,18 @@ CELERY_RESULT_BACKEND = os.getenv("CELERY_BACKEND", "redis://redis:6379/0")
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
+CELERY_TIMEZONE = "Europe/Sofia"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 45 * 60
 
 CELERY_BEAT_SCHEDULE = {
-    # 'fetch-and-store-pv-data-every-5-minutes': {
-    #     'task': 'pv_api.tasks.task_fetch_and_store_pv_data',
-    #     'schedule': crontab(),
-    # },
+    'fetch-and-store-pv-data-every-5-minutes': {
+        'task': 'pv_api.tasks.task_fetch_and_store_pv_data',
+        'schedule': crontab(),
+    },
     'define_task_fetch_and_store_sftp_data': {
         'task': 'pv_api.tasks.task_fetch_and_store_sftp_data',
-        'schedule': crontab(hour=11, minute=51),
+        'schedule': crontab(hour=11, minute=54),
     },
     'define_task_fetch_and_store_weather_data_forecast': {
         'task': 'pv_api.tasks.task_fetch_and_store_weather_data_forecast',
