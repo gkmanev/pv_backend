@@ -45,13 +45,13 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 
 CELERY_BEAT_SCHEDULE = {
-    'fetch-and-store-pv-data-every-5-minutes': {
-        'task': 'pv_api.tasks.task_fetch_and_store_pv_data',
-        'schedule': crontab(),
-    },
+    # 'fetch-and-store-pv-data-every-5-minutes': {
+    #     'task': 'pv_api.tasks.task_fetch_and_store_pv_data',
+    #     'schedule': crontab(),
+    # },
     'define_task_fetch_and_store_sftp_data': {
         'task': 'pv_api.tasks.task_fetch_and_store_sftp_data',
-        'schedule': crontab(hour=11, minute=42),
+        'schedule': crontab(hour=11, minute=47),
     },
     'define_task_fetch_and_store_weather_data_forecast': {
         'task': 'pv_api.tasks.task_fetch_and_store_weather_data_forecast',
