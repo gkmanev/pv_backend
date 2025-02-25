@@ -9,7 +9,9 @@ import requests_cache
 import pandas as pd
 from retry_requests import retry
 from pv_api.models import PvMeasurementData
-
+import zipfile
+import dropbox
+import re
 
 
 class SFTPDataProcessor:
@@ -242,5 +244,168 @@ class WeatherDataProcessor:
 
 	    
 
-	    
+class OneDriveDataProcessor:
+
+       
+    def __init__(self):      
+        #self.dropbox_downloader()
+        self.folder = 'test'  # You can make this dynamic if needed.
+        self.ppe = None
+        self.file_date = None
+        
+
+    def dropbox_downloader(self):
+        dbx = dropbox.Dropbox(settings.DROPBOX_TOKEN)
+        script_dir = os.getcwd()
+        local_test_dir = os.path.join(script_dir, self.folder)
+        os.makedirs(local_test_dir, exist_ok=True)
+
+        # List all files and folders in the root directory
+        for entry in dbx.files_list_folder('').entries:
+            if entry.name == self.folder:
+                # Print content of the 'test' folder
+                for entry in dbx.files_list_folder(f'/{self.folder}').entries:
+                    local_path = os.path.join(local_test_dir, f'{entry.name}')
+                    dbx.files_download_to_file(local_path, f'/{self.folder}/{entry.name}')
+
+
+    def filter_the_ENED_files(self, file):
+        # Define patterns for both kinds of file names
+        patterns = [
+            r'ENED_\d+_\w+_\w+_\d{8}',
+            r'(\d+)_\d+_CO_(\d{8})\.dat'
+        ]
+        
+        # Check if the file matches any of the patterns
+        for pattern in patterns:
+            if re.match(pattern, file):
+                return file
+        return None  # explicitly return None when no match
+
+
+    def extract_downloaded_files(self):
+        folder_path = os.path.join(os.getcwd(), self.folder)
+        extracted_files = os.listdir(folder_path)
+        # Extract the zipped
+        for file in extracted_files:
+            if file.endswith('.zip'):
+                with zipfile.ZipFile(os.path.join(folder_path, file), 'r') as zip_ref:
+                    zip_ref.extractall(folder_path)
+
+       
+    def filter_extracted_files_and_process_data(self):
+        folder_path = os.path.join(os.getcwd(), self.folder)
+        extracted_files = os.listdir(folder_path)        
+        for data in extracted_files:
+            # List all files in the extracted folder recursively
+            for root, dirs, files in os.walk(os.path.join(folder_path, data)):
+                for file in files:            
+                    filtered = self.filter_the_ENED_files(file)
+                   
+                    if filtered:
+                        self.prepare_files(root, filtered)
+                        
+       
+   
+    def prepare_files(self, root, file):   
+        file_fields = [] 
+        
+        with open(os.path.join(root, file), 'r') as f:
+            content = f.readlines()                      
+            for line in content[6:]:                
+                line = line if isinstance(line, str) else line.decode("utf-8")            
+                fields = line.strip().split(",")  
+                file_fields.append(fields)
+            ppe, file_date = self.parse_file_name(file)
+            if file_date and ppe:
+                self.ppe = ppe
+                self.file_date = file_date
+                self.process_files(file_fields)
+            else:
+                print(f"Failed to parse the file name: {file}")
+            
+                
+    def process_files(self, fields):       
+        interval_data = fields[6:] 
+        interval_data = fields[6:len(fields) - 1]
+        current_time = datetime.combine(self.file_date, datetime.min.time())
+        processed_data = []
+        for interval in interval_data:
+            value, direction = interval
+            processed_data.append({
+                'timestamp': current_time,
+                'value': float(value),
+            })
+            current_time += timedelta(minutes=15)  
+        self.save_db(processed_data)     
+          
+            
+    def parse_file_name(self, file):
+        # Define patterns for both kinds of file names
+        patterns = [
+            r'ENED_(\d+)_\w+_\w+_(\d{8})',
+            r'(\d+)_\d+_CO_(\d{8})\.dat'
+        ]
+        
+        # Check if the file matches any of the patterns and extract information
+        for pattern in patterns:
+            match = re.search(pattern, file)
+            if match:
+                long_number = match.group(1)
+                date_str = match.group(2)
+                date = datetime.strptime(date_str, '%Y%m%d').date()
+                return long_number, date
+        return None, None
+            
+          
+    def save_db(self, data_list):
+        
+        project_mapping_path = os.path.join(settings.BASE_DIR, 'projects_mapping.json')
+        # Load the JSON file
+        project_mapping = []
+        try:
+            if os.path.exists(project_mapping_path):
+                with open(project_mapping_path, 'r') as f:
+                    project_mapping = json.load(f)
+            else:
+                print(f"Project mapping file not found: {project_mapping_path}")
+        except Exception as e:
+            print(f"Error loading project mapping file: {e}")
+
+        for it in project_mapping:
+            found = it.get("PPE", None)
+            if found == self.ppe:
+                if self.ppe == '590543540101633098':
+                    print(f"Processing data for {self.ppe}")
+                    for data in data_list:
+                        try:
+                            timestamp = data['timestamp']
+                            production = data['value']
+                            latitude = it['latitude']
+                            longitude = it['longitude']
+                            farm = it['farm']
+                            production = round(production, 2)   
+                            print(f"timestamp: {timestamp} || production: {production}")                    
+                            PvMeasurementData.objects.update_or_create(
+                                timestamp=timestamp,
+                                ppe=self.ppe,
+                                defaults={
+                                'production': production,
+                                'latitude': latitude,
+                                'longitude': longitude,   
+                                'farm': farm,                
+                                }
+                            )
+                        except Exception as e:
+                            print(f"Error saving data to database: {e}")
+        
+
+
+# test = OneDriveDataProcessor()
+# test.filter_extracted_files_and_process_data()
+
+
+           
+            
+            
 

@@ -118,6 +118,7 @@ class ConfidenceApiView(APIView):
         if confidence and start_date:
             PvMeasurementData.confidance.calculate_confidance(initial_date=datetime.strptime(start_date, "%Y-%m-%d"))
             return Response({"message": "Confidence intervals calculated and database updated."}, status=status.HTTP_200_OK)
+        
 
 class ForecastDataDayAheadViewSet(viewsets.ModelViewSet):
     queryset = ForecastDataDayAhead.objects.all().order_by('timestamp')
