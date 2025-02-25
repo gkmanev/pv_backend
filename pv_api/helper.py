@@ -256,8 +256,9 @@ class OneDriveDataProcessor:
 
     def dropbox_downloader(self):
         dbx = dropbox.Dropbox(settings.DROPBOX_TOKEN)
-        script_dir = os.getcwd()
+        script_dir = settings.BASE_DIR
         local_test_dir = os.path.join(script_dir, self.folder)
+        print(local_test_dir)
         os.makedirs(local_test_dir, exist_ok=True)
 
         # List all files and folders in the root directory
