@@ -8,6 +8,8 @@ services:
     command: gunicorn pv_backend.wsgi:application --bind 0.0.0.0:8000
     ports:
       - '8000:8000'
+    env_file:
+      - .env
     environment:
       - POSTGRES_DB=postgres_latest
       - POSTGRES_USER=postgres
