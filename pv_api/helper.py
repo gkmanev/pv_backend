@@ -304,6 +304,7 @@ class OneDriveDataProcessor:
                     filtered = self.filter_the_ENED_files(file)
                    
                     if filtered:
+                        print(f"Processing file: {filtered}")
                         self.prepare_files(root, filtered)
                         
        
