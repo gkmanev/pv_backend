@@ -377,30 +377,29 @@ class OneDriveDataProcessor:
         for it in project_mapping:
             found = it.get("PPE", None)
             if found == self.ppe:
-                if self.ppe == '590543540101633098':
+                if self.ppe == '590543540101633098':                     
                     print(f"Processing data for {self.ppe}")
                     for data in data_list:
-                        try:
+                        try:                        
                             timestamp = data['timestamp']
                             production = data['value']
                             latitude = it['latitude']
                             longitude = it['longitude']
                             farm = it['farm']
-                            production = round(production, 2)   
-                            print(f"timestamp: {timestamp} || production: {production}")                    
-                            PvMeasurementData.objects.update_or_create(
-                                timestamp=timestamp,
-                                ppe=self.ppe,
-                                defaults={
+                            production = round(production, 2)                                        
+                            _, created = PvMeasurementData.objects.get_or_create(
+                            timestamp=timestamp,
+                            ppe=self.ppe,
+                            defaults={
                                 'production': production,
                                 'latitude': latitude,
                                 'longitude': longitude,   
                                 'farm': farm,                
-                                }
-                            )
+                            }
+                        )
                         except Exception as e:
                             print(f"Error saving data to database: {e}")
-        
+            
 
 
 # test = OneDriveDataProcessor()
