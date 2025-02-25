@@ -376,9 +376,7 @@ class OneDriveDataProcessor:
 
         for it in project_mapping:
             found = it.get("PPE", None)
-            if found == self.ppe:
-                if self.ppe == '590543540101633098':                     
-                    print(f"Processing data for {self.ppe}")
+            if found == self.ppe:                  
                     for data in data_list:
                         try:                        
                             timestamp = data['timestamp']
@@ -397,10 +395,6 @@ class OneDriveDataProcessor:
                                 'farm': farm,                
                                 }
                             )
-                            if created:
-                                print(f"New entry created for timestamp: {timestamp}")
-                            else:
-                                print(f"Entry already exists for timestamp: {timestamp}")
                         except Exception as e:
                             print(f"Error saving data to database: {e}")
             
