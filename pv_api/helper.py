@@ -395,8 +395,12 @@ class OneDriveDataProcessor:
                                 'latitude': latitude,
                                 'longitude': longitude,   
                                 'farm': farm,                
-                            }
-                        )
+                                }
+                            )
+                            if created:
+                                print(f"New entry created for timestamp: {timestamp}")
+                            else:
+                                print(f"Entry already exists for timestamp: {timestamp}")
                         except Exception as e:
                             print(f"Error saving data to database: {e}")
             
