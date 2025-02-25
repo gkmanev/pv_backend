@@ -14,8 +14,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):  
         test = OneDriveDataProcessor()
-        #test.dropbox_downloader()
-        #test.extract_downloaded_files()
-        test.filter_extracted_files_and_process_data()
+        test.dropbox_downloader()
+        test.extract_downloaded_files()
+        #test.filter_extracted_files_and_process_data()
 
         
