@@ -260,14 +260,14 @@ class OneDriveDataProcessor:
         local_test_dir = os.path.join(script_dir, self.folder)
         print(local_test_dir)
         os.makedirs(local_test_dir, exist_ok=True)
-
-        # List all files and folders in the root directory
+        
         for entry in dbx.files_list_folder('').entries:
             if entry.name == self.folder:
+                print(f"{entry.name} || {self.folder}")
                 # Print content of the 'test' folder
-                for entry in dbx.files_list_folder(f'/{self.folder}').entries:
-                    local_path = os.path.join(local_test_dir, f'{entry.name}')
-                    dbx.files_download_to_file(local_path, f'/{self.folder}/{entry.name}')
+                # for entry in dbx.files_list_folder(f'/{self.folder}').entries:
+                #     local_path = os.path.join(local_test_dir, f'{entry.name}')
+                #     dbx.files_download_to_file(local_path, f'/{self.folder}/{entry.name}')
 
 
     def filter_the_ENED_files(self, file):
