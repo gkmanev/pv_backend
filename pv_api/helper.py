@@ -278,7 +278,7 @@ class OneDriveDataProcessor:
         
         # Check if the file matches any of the patterns
         for pattern in patterns:
-            if re.match(pattern, file):
+            if re.match(pattern, file) or file.endswith('.xml'):
                 return file
         return None  # explicitly return None when no match
 
