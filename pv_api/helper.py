@@ -12,6 +12,7 @@ from pv_api.models import PvMeasurementData
 import zipfile
 import dropbox
 import re
+import xml.etree.ElementTree as ET
 
 
 class SFTPDataProcessor:
@@ -258,15 +259,13 @@ class OneDriveDataProcessor:
         dbx = dropbox.Dropbox(settings.DROPBOX_TOKEN)
         script_dir = settings.BASE_DIR
         local_test_dir = os.path.join(script_dir, self.folder)
-        print(local_test_dir)
         os.makedirs(local_test_dir, exist_ok=True)
         
         for entry in dbx.files_list_folder('').entries:
             if entry.name == self.folder:               
                 for entry in dbx.files_list_folder(f'/{self.folder}').entries:
                     local_path = os.path.join(local_test_dir, f'{entry.name}')
-                    print(local_path)
-                    print((local_path, f'/{self.folder}/{entry.name}'))
+                   
                     dbx.files_download_to_file(local_path, f'/{self.folder}/{entry.name}')
 
 
@@ -296,36 +295,44 @@ class OneDriveDataProcessor:
        
     def filter_extracted_files_and_process_data(self):
         folder_path = os.path.join(os.getcwd(), self.folder)
-        extracted_files = os.listdir(folder_path)        
+        extracted_files = os.listdir(folder_path)    
+        print(extracted_files)    
         for data in extracted_files:
             # List all files in the extracted folder recursively
             for root, dirs, files in os.walk(os.path.join(folder_path, data)):
                 for file in files:            
                     filtered = self.filter_the_ENED_files(file)
                    
-                    if filtered:
-                        print(f"Processing file: {filtered}")
+                    if filtered:                        
                         self.prepare_files(root, filtered)
                         
        
    
-    def prepare_files(self, root, file):   
-        file_fields = [] 
-        
-        with open(os.path.join(root, file), 'r') as f:
-            content = f.readlines()                      
-            for line in content[6:]:                
-                line = line if isinstance(line, str) else line.decode("utf-8")            
-                fields = line.strip().split(",")  
-                file_fields.append(fields)
-            ppe, file_date = self.parse_file_name(file)
-            if file_date and ppe:
-                self.ppe = ppe
-                self.file_date = file_date
-                self.process_files(file_fields)
-            else:
-                print(f"Failed to parse the file name: {file}")
-            
+    def prepare_files(self, root, file): 
+        if file.endswith('.xml'):
+            full_path = os.path.join(root, file)            
+            if not os.path.exists(full_path):  
+                raise FileNotFoundError(f"File does not exist: {full_path}")
+            xml_content = None
+            with open(full_path, "r", encoding="utf-8") as f:
+                xml_content = f.read()
+            if xml_content:
+                self.process_files_xml(xml_content)
+        # else:
+        #     file_fields = []       
+        #     with open(os.path.join(root, file), 'r') as f:
+        #         content = f.readlines()                      
+        #         for line in content[6:]:                
+        #             line = line if isinstance(line, str) else line.decode("utf-8")            
+        #             fields = line.strip().split(",")  
+        #             file_fields.append(fields)
+        #         ppe, file_date = self.parse_file_name(file)
+        #         if file_date and ppe:
+        #             self.ppe = ppe
+        #             self.file_date = file_date
+        #             self.process_files(file_fields)
+        #         else:
+        #             print(f"Failed to parse the file name: {file}")            
                 
     def process_files(self, fields):       
         interval_data = fields[6:] 
@@ -358,6 +365,26 @@ class OneDriveDataProcessor:
                 date = datetime.strptime(date_str, '%Y%m%d').date()
                 return long_number, date
         return None, None
+    
+    
+    def process_files_xml(self, xml_content):
+        root = ET.fromstring(xml_content)        
+        for ppe in root.findall(".//PPE"):
+            kod_ppe = ppe.find("kodPPE").text
+            self.ppe = kod_ppe
+            er_data = []
+            
+            for er in ppe.findall("ER"):
+                t = er.find("t").text            
+                ewv = er.find("Ewv").text      
+                ews = er.find("Ews").text
+                er_data.append({
+                    "ppe":kod_ppe,
+                    "timestamp": t,
+                    "value": ewv,  
+                    "value_ews": ews                 
+                })
+            self.save_db(er_data)
             
           
     def save_db(self, data_list):
@@ -384,17 +411,18 @@ class OneDriveDataProcessor:
                             latitude = it['latitude']
                             longitude = it['longitude']
                             farm = it['farm']
-                            production = round(production, 2)                                        
-                            _, created = PvMeasurementData.objects.get_or_create(
-                            timestamp=timestamp,
-                            ppe=self.ppe,
-                            defaults={
-                                'production': production,
-                                'latitude': latitude,
-                                'longitude': longitude,   
-                                'farm': farm,                
-                                }
-                            )
+                            production = round(production, 2)    
+                            print(f"PPE: {self.ppe} || Timestamp: {timestamp} || Production: {production}")                                    
+                            # _, created = PvMeasurementData.objects.get_or_create(
+                            # timestamp=timestamp,
+                            # ppe=self.ppe,
+                            # defaults={
+                            #     'production': production,
+                            #     'latitude': latitude,
+                            #     'longitude': longitude,   
+                            #     'farm': farm,                
+                            #     }
+                            # )
                         except Exception as e:
                             print(f"Error saving data to database: {e}")
             
