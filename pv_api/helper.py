@@ -385,8 +385,8 @@ class OneDriveDataProcessor:
                         "value": ewv,  
                         "value_ews": ews                 
                     })
-            if self.ppe == '590243845044057561':
-                self.save_db(er_data)
+            
+            self.save_db(er_data)
             
           
     def save_db(self, data_list):
