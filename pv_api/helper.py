@@ -407,7 +407,7 @@ class OneDriveDataProcessor:
                     for data in data_list:
                         try:                        
                             timestamp = data['timestamp']
-                            production = data['value']
+                            production = float(data['value'])
                             latitude = it['latitude']
                             longitude = it['longitude']
                             farm = it['farm']
