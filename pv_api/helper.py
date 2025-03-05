@@ -318,21 +318,21 @@ class OneDriveDataProcessor:
                 xml_content = f.read()
             if xml_content:
                 self.process_files_xml(xml_content)
-        # else:
-        #     file_fields = []       
-        #     with open(os.path.join(root, file), 'r') as f:
-        #         content = f.readlines()                      
-        #         for line in content[6:]:                
-        #             line = line if isinstance(line, str) else line.decode("utf-8")            
-        #             fields = line.strip().split(",")  
-        #             file_fields.append(fields)
-        #         ppe, file_date = self.parse_file_name(file)
-        #         if file_date and ppe:
-        #             self.ppe = ppe
-        #             self.file_date = file_date
-        #             self.process_files(file_fields)
-        #         else:
-        #             print(f"Failed to parse the file name: {file}")            
+        else:
+            file_fields = []       
+            with open(os.path.join(root, file), 'r') as f:
+                content = f.readlines()                      
+                for line in content[6:]:                
+                    line = line if isinstance(line, str) else line.decode("utf-8")            
+                    fields = line.strip().split(",")  
+                    file_fields.append(fields)
+                ppe, file_date = self.parse_file_name(file)
+                if file_date and ppe:
+                    self.ppe = ppe
+                    self.file_date = file_date
+                    self.process_files(file_fields)
+                else:
+                    print(f"Failed to parse the file name: {file}")            
                 
     def process_files(self, fields):       
         interval_data = fields[6:] 
