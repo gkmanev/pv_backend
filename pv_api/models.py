@@ -16,23 +16,26 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
             queryset = self.get_queryset()  # Default to all data if no queryset provided
 
         # Convert the data to a pandas DataFrame
-        data = queryset.values('timestamp', 'signal_value', 'parameter_id')
+        data = queryset.values('timestamp', 'signal_value', 'installation_name')
         df = pd.DataFrame(list(data))        
         if df.empty:
             return []  # Handle the case where no data is returned
 
         df['timestamp'] = pd.to_datetime(df['timestamp'])
         df.set_index('timestamp', inplace=True)
-        df_resampled = df
-        print(df_resampled.head())
-        # df_resampled = df.resample('15T').agg({
-        #     'signal_value': 'sum',
-        #     'signal_uid': 'first'  # Assuming you want to keep the first signal_uid in each resampled period
-        # }).reset_index()
 
-        # add the installation name as farm column
+        installation_name = df['installation_name']
+        df.drop(columns='installation_name', inplace=True)
+
+        # Resample the data to 15 minutes
+        df_resampled = df.resample('15T').sum().ffill()
+        # add the installation name to the resampled data
+        df_resampled['installation_name'] = installation_name.iloc[0]
+        
+        print(df_resampled.head())
+
         if farm:    
-            df_resampled['farm'] = farm
+            df_resampled['installation_name'] = farm
         # Convert the DataFrame back to a list of dictionaries        
         return df_resampled.to_dict(orient='records')
 
