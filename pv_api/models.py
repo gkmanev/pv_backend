@@ -32,6 +32,8 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
         # add the installation name to the resampled data
         df_resampled['installation_name'] = installation_name.iloc[0]
         
+        # Reset the index to make the timestamp a column
+        df_resampled.reset_index(inplace=True)
         print(df_resampled.head())
 
         if farm:    
