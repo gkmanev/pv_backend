@@ -23,10 +23,12 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
 
         df['timestamp'] = pd.to_datetime(df['timestamp'])
         df.set_index('timestamp', inplace=True)
-        print(df.head())
-       
         
-        df_resampled = []
+        # Resample the data to 15 minutes
+        df_resampled = df.resample('15T').sum().ffill()
+        print(df_resampled.head())
+        
+       
         # installation_name = df['installation_name']
         # df.drop(columns='installation_name', inplace=True)
 
