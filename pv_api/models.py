@@ -23,10 +23,12 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
 
         df['timestamp'] = pd.to_datetime(df['timestamp'])
         df.set_index('timestamp', inplace=True)
-        df_resampled = df.resample('15T').agg({
-            'signal_value': 'sum',
-            'signal_uid': 'first'  # Assuming you want to keep the first signal_uid in each resampled period
-        }).reset_index()
+        df_resampled = df
+        print(df_resampled.head())
+        # df_resampled = df.resample('15T').agg({
+        #     'signal_value': 'sum',
+        #     'signal_uid': 'first'  # Assuming you want to keep the first signal_uid in each resampled period
+        # }).reset_index()
 
         # add the installation name as farm column
         if farm:    
