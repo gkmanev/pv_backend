@@ -10,13 +10,13 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
     def get_queryset(self):
         return super().get_queryset()
 
-    def resample_to_15min(self, farm, queryset=None):
+    def resample_to_15min(self, farm=None, queryset=None):
         
         if queryset is None:
             queryset = self.get_queryset()  # Default to all data if no queryset provided
 
         # Convert the data to a pandas DataFrame
-        data = queryset.values('timestamp', 'signal_value')
+        data = queryset.values('timestamp', 'signal_value', 'signal_uid')
         df = pd.DataFrame(list(data))        
         if df.empty:
             return []  # Handle the case where no data is returned
@@ -26,8 +26,8 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
         df = df.resample('15T').sum()
         df = df.reset_index()
         # add the installation name as farm column
-        df['farm'] = farm
-
+        if farm:    
+            df['farm'] = farm
         # Convert the DataFrame back to a list of dictionaries        
         return df.to_dict(orient='records')
 

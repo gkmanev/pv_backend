@@ -32,6 +32,24 @@ class PvDataViewSet(viewsets.ModelViewSet):
 
         # Return the resampled data as a response
         return Response(resampled_data, status=status.HTTP_200_OK)    
+    
+
+class PvTechnicalDataViewSet(viewsets.ModelViewSet):
+    queryset = PvTechnicalData.objects.filter(parameter_id=720).order_by('timestamp')
+    serializer_class = PvDataSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()       
+        return queryset
+    
+
+    def list(self, request, *args, **kwargs):          
+        
+        queryset = self.get_queryset()        
+        resampled_data = PvTechnicalData.resample.resample_to_15min(queryset)
+
+        # Return the resampled data as a response
+        return Response(resampled_data, status=status.HTTP_200_OK)    
    
 
 

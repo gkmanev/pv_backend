@@ -1,12 +1,13 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import PvDataViewSet, PvMeasurementDataViewSet, ForecastDataDayAheadViewSet, ConfidenceApiView, LastNUniqueDataPointsView
+from .views import PvDataViewSet, PvMeasurementDataViewSet, ForecastDataDayAheadViewSet, ConfidenceApiView, LastNUniqueDataPointsView, PvTechnicalDataViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = routers.DefaultRouter()
 router.register(r'pvdata', PvDataViewSet)
 router.register(r'pvmeasurementdata', PvMeasurementDataViewSet) 
 router.register(r'forecastdata', ForecastDataDayAheadViewSet)
+router.register(r'pvtechnicaldata', PvTechnicalDataViewSet)
 
 
 urlpatterns = [
