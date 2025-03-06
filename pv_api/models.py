@@ -35,9 +35,7 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
         # Reset the index to make the timestamp a column
         df_resampled.reset_index(inplace=True)
         print(df_resampled.head())
-
-        if farm:    
-            df_resampled['installation_name'] = farm
+        
         # Convert the DataFrame back to a list of dictionaries        
         return df_resampled.to_dict(orient='records')
 
