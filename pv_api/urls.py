@@ -7,7 +7,7 @@ router = routers.DefaultRouter()
 router.register(r'pvdata', PvDataViewSet)
 router.register(r'pvmeasurementdata', PvMeasurementDataViewSet) 
 router.register(r'forecastdata', ForecastDataDayAheadViewSet)
-router.register(r'pvtechnicaldata', PvTechnicalDataViewSet)
+router.register(r'technicalData', PvTechnicalDataViewSet)
 
 
 urlpatterns = [
