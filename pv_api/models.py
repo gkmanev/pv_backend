@@ -15,33 +15,29 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
         if queryset is None:
             queryset = self.get_queryset()  # Default to all data if no queryset provided
 
-        # Convert the data to a pandas DataFrame
+        # Convert to DataFrame
         data = queryset.values('timestamp', 'signal_value', 'installation_name')
-        df = pd.DataFrame(list(data))        
-        if df.empty:
-            return []  # Handle the case where no data is returned
+        df = pd.DataFrame(list(data))
 
+        if df.empty:
+            return []  # Return an empty list if no data
+
+        # Convert timestamp to datetime
         df['timestamp'] = pd.to_datetime(df['timestamp'])
         df.set_index('timestamp', inplace=True)
-        
-        # Resample the data to 15 minutes
-        df_resampled = df.resample('15T').sum().ffill()
-        print(df_resampled.head())
-        
-       
-        # installation_name = df['installation_name']
-        # df.drop(columns='installation_name', inplace=True)
 
-        # # Resample the data to 15 minutes
-        # df_resampled = df.resample('15T').sum().ffill()
-        # # add the installation name to the resampled data
-        # df_resampled['installation_name'] = installation_name.iloc[0]
+        def resample_group(group):
+            resampled = group.resample('15T').sum()  # Sum signal_value
+            resampled['installation_name'] = group['installation_name'].resample('15T').last()  # Keep last installation name
+            return resampled
         
-        # # Reset the index to make the timestamp a column
-        # df_resampled.reset_index(inplace=True)
-        # print(df_resampled.head())
-        
-        # Convert the DataFrame back to a list of dictionaries        
+        # Group by installation_name (if needed) before resampling
+        df_resampled = df.groupby('installation_name', group_keys=False).apply(resample_group)
+
+        # Reset index to get timestamp as a column
+        df_resampled.reset_index(inplace=True)
+
+        # Convert to list of dictionaries for Django REST response
         return df_resampled.to_dict(orient='records')
 
        
