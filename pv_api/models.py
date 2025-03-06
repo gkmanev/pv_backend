@@ -16,7 +16,7 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
             queryset = self.get_queryset()  # Default to all data if no queryset provided
 
         # Convert the data to a pandas DataFrame
-        data = queryset.values('timestamp', 'signal_value', 'signal_uid')
+        data = queryset.values('timestamp', 'signal_value', 'parameter_id')
         df = pd.DataFrame(list(data))        
         if df.empty:
             return []  # Handle the case where no data is returned
