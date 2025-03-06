@@ -23,18 +23,21 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
 
         df['timestamp'] = pd.to_datetime(df['timestamp'])
         df.set_index('timestamp', inplace=True)
-
-        installation_name = df['installation_name']
-        df.drop(columns='installation_name', inplace=True)
-
-        # Resample the data to 15 minutes
-        df_resampled = df.resample('15T').sum().ffill()
-        # add the installation name to the resampled data
-        df_resampled['installation_name'] = installation_name.iloc[0]
+        print(df.head())
+       
         
-        # Reset the index to make the timestamp a column
-        df_resampled.reset_index(inplace=True)
-        print(df_resampled.head())
+        df_resampled = []
+        # installation_name = df['installation_name']
+        # df.drop(columns='installation_name', inplace=True)
+
+        # # Resample the data to 15 minutes
+        # df_resampled = df.resample('15T').sum().ffill()
+        # # add the installation name to the resampled data
+        # df_resampled['installation_name'] = installation_name.iloc[0]
+        
+        # # Reset the index to make the timestamp a column
+        # df_resampled.reset_index(inplace=True)
+        # print(df_resampled.head())
         
         # Convert the DataFrame back to a list of dictionaries        
         return df_resampled.to_dict(orient='records')
