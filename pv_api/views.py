@@ -39,12 +39,15 @@ class PvTechnicalDataViewSet(viewsets.ModelViewSet):
     serializer_class = PvDataSerializer
 
     def get_queryset(self):
-        queryset = super().get_queryset()       
+        queryset = super().get_queryset() 
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')    
+        if start_date and end_date:
+            queryset = queryset.filter(timestamp__range=[start_date, end_date])      
         return queryset
     
 
-    def list(self, request, *args, **kwargs):          
-        
+    def list(self, request, *args, **kwargs): 
         queryset = self.get_queryset()        
         resampled_data = PvTechnicalData.resample.resample_to_15min(queryset)
         
