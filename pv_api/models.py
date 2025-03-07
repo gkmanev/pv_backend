@@ -12,11 +12,11 @@ class ResemplePvTechnicalDataTo15Min(models.Manager):
 
     def resample_to_15min(self, farm=None, queryset=None):
         
+        
         if queryset is None:
             queryset = self.get_queryset()  # Default to all data if no queryset provided
 
-        for q in queryset[:10]:
-            print(q.timestamp)
+       
         # Convert to DataFrame
         data = queryset.values('timestamp', 'signal_value', 'installation_name')
         df = pd.DataFrame(list(data))
