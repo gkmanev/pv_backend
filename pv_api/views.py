@@ -52,7 +52,7 @@ class PvTechnicalDataViewSet(viewsets.ModelViewSet):
         resampled_data = PvTechnicalData.resample.resample_to_15min(queryset)
         
         # Return the resampled data as a response
-        return Response(queryset, status=status.HTTP_200_OK)    
+        return Response(resampled_data, status=status.HTTP_200_OK)    
    
 
 
