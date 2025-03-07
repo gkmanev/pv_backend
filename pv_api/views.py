@@ -42,15 +42,17 @@ class PvTechnicalDataViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset() 
         start_date = self.request.query_params.get('start_date')
         end_date = self.request.query_params.get('end_date')       
-        if start_date and end_date:
+        if start_date and end_date:            
             queryset_filtered = queryset.filter(timestamp__gte=start_date, timestamp__lte=end_date)
+            for q in queryset_filtered[:10]:
+                print(q.timestamp) 
             return queryset_filtered
         return queryset    
 
     def list(self, request, *args, **kwargs): 
         queryset = self.get_queryset()  
-        for q in queryset[:10]:
-            print(q.timestamp)      
+        # for q in queryset[:10]:
+        #     print(q.timestamp)      
         resampled_data = PvTechnicalData.resample.resample_to_15min(queryset)
         
         # Return the resampled data as a response
