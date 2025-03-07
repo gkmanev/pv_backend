@@ -41,12 +41,11 @@ class PvTechnicalDataViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset() 
         start_date = self.request.query_params.get('start_date')
-        end_date = self.request.query_params.get('end_date')    
-        print(f"Start Date: {start_date}, End Date: {end_date}")
+        end_date = self.request.query_params.get('end_date')       
         if start_date and end_date:
-            queryset = queryset.filter(timestamp__range=[start_date, end_date])
-        return queryset
-    
+            queryset_filtered = queryset.filter(timestamp__gte=start_date, timestamp__lte=end_date)
+            return queryset_filtered
+        return queryset    
 
     def list(self, request, *args, **kwargs): 
         queryset = self.get_queryset()  
