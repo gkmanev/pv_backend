@@ -28,7 +28,7 @@ class PvDataViewSet(viewsets.ModelViewSet):
         queryset = self.get_queryset()
         if farm:
             queryset = queryset.filter(installation_name=farm)  
-        resampled_data = PvTechnicalData.resample.resample_to_15min(farm, queryset)
+        resampled_data = PvTechnicalData.resample.resample_to_15min(farm, queryset=queryset)
 
         # Return the resampled data as a response
         return Response(resampled_data, status=status.HTTP_200_OK)    
