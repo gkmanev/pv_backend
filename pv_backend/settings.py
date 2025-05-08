@@ -49,10 +49,10 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 45 * 60
 
 CELERY_BEAT_SCHEDULE = {
-    'fetch-and-store-pv-data-every-5-minutes': {
-        'task': 'pv_api.tasks.task_fetch_and_store_pv_data',
-        'schedule': crontab(),
-    },
+    # 'fetch-and-store-pv-data-every-5-minutes': {
+    #     'task': 'pv_api.tasks.task_fetch_and_store_pv_data',
+    #     'schedule': crontab(),
+    # },
     'define_task_fetch_and_store_sftp_data': {
         'task': 'pv_api.tasks.task_fetch_and_store_sftp_data',
         'schedule': crontab(hour=15, minute=39),
